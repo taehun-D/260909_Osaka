@@ -21,7 +21,7 @@ body{
   background:var(--paper);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
   font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%;
-  padding-bottom:calc(90px + env(safe-area-inset-bottom));
+  padding-bottom:calc(88px + env(safe-area-inset-bottom));
 }
 button,input,select,textarea{font-family:inherit;font-size:16px}
 .wrap{max-width:620px;margin:0 auto;padding:0 12px}
@@ -43,6 +43,9 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .chip{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
   border-radius:999px;padding:6px 13px;font-size:13.5px;cursor:pointer;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+.chip.tog{border-style:dashed;border-color:var(--ink-3)}
+.chip.tog[aria-pressed="true"]{background:var(--moss);border-color:var(--moss);border-style:solid;color:#fff}
+.fsep{flex:0 0 auto;width:1px;align-self:stretch;background:var(--rule);margin:2px 5px}
 
 .store{margin:18px 0 0}
 .shead{display:flex;align-items:flex-start;gap:9px;padding:0 2px 6px}
@@ -65,16 +68,19 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 @media(min-width:560px){.grid{grid-template-columns:1fr 1fr 1fr}}
 .card{background:var(--card);border:1px solid var(--rule);border-radius:12px;overflow:hidden;
   display:flex;flex-direction:column}
-.card.on{opacity:.52}
+.card.on .photo img{opacity:.4}
+.card.on .yen,.card.on .won,.card.on .cmp,.card.on .pri{opacity:.5}
 .photo{position:relative;width:100%;aspect-ratio:1/1;background:var(--shade);border:0;padding:0;
   display:grid;place-items:center;cursor:pointer;overflow:hidden}
 .photo img{width:100%;height:100%;object-fit:cover;display:block}
 .photo .ph{font-size:30px;font-weight:700;color:#93A3B8}
-.mark{position:absolute;top:7px;right:7px;width:36px;height:36px;border-radius:50%;border:0;padding:0;
-  background:rgba(255,255,255,.92);box-shadow:0 1px 3px rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer}
-.mark i{display:block;width:20px;height:20px;border:2px solid #B7BEC5;border-radius:50%}
-.card.on .mark i{border-color:var(--indigo);background:var(--indigo) no-repeat center/13px
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")}
+.mark{position:absolute;top:8px;right:8px;width:38px;height:38px;border-radius:50%;border:0;padding:0;
+  background:rgba(16,20,24,.55);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 1px 6px rgba(0,0,0,.35)}
+.mark i{display:block;width:21px;height:21px;border:2.5px solid #fff;border-radius:50%}
+.card.on .mark{background:var(--indigo);box-shadow:0 1px 6px rgba(0,0,0,.35),0 0 0 2.5px rgba(255,255,255,.92)}
+.card.on .mark i{border-color:#fff;background:#fff no-repeat center/14px
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322406B' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")}
 .cbody{padding:9px 10px 11px;text-align:left;background:none;border:0;cursor:pointer;flex:1;width:100%}
 .jp{font-size:14px;font-weight:650;line-height:1.32;letter-spacing:-.01em;word-break:break-word;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -96,20 +102,23 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .pri.C{background:#EDEFED;color:var(--ink-3)}
 .empty{padding:34px 16px;text-align:center;color:var(--ink-2);font-size:14px}
 
-.fab{position:fixed;left:0;right:0;bottom:0;z-index:18;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-  background:linear-gradient(rgba(231,233,230,0),rgba(231,233,230,.96) 38%)}
-.fab button{width:100%;max-width:596px;margin:0 auto;display:block;border:0;border-radius:12px;
-  background:var(--indigo);color:#fff;padding:14px;font-size:15.5px;font-weight:650;cursor:pointer}
+.fab{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:18}
+.fab button{width:58px;height:58px;border-radius:50%;border:0;background:var(--indigo);color:#fff;
+  display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.26)}
+.fab button:active{transform:scale(.94)}
 
 .sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.35);display:none}
 .sheet.open{display:block}
-.spanel{position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow-y:auto;background:var(--paper);
+.spanel{position:absolute;left:0;right:0;bottom:0;max-height:68vh;overflow-y:auto;background:var(--paper);
   border-radius:16px 16px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom));
   -webkit-overflow-scrolling:touch}
 .shd{position:sticky;top:0;background:var(--paper);display:flex;align-items:center;gap:10px;
   padding:14px 14px 10px;border-bottom:1px solid var(--rule);z-index:1}
 .shd h2{font-size:16px;font-weight:700;margin:0}
+.shd-r{margin-left:auto;display:flex;align-items:center;gap:16px}
+.vsep-v{width:1px;height:17px;background:var(--rule);flex:0 0 auto}
 .txt{border:0;background:none;color:var(--indigo);font-weight:650;font-size:15px;cursor:pointer;padding:6px 2px}
+.txt.sub{color:var(--ink-2);font-weight:500}
 .txt.del{color:var(--vermilion)}
 .sbody{padding:14px}
 label.f{display:block;margin-bottom:13px}
@@ -130,8 +139,12 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 .hint{font-size:12px;color:var(--ink-3);margin:-6px 0 14px}
 .rowbtn{width:100%;text-align:left;border:1px solid var(--rule);background:var(--card);color:var(--ink);
   border-radius:10px;padding:13px 12px;font-size:14.5px;margin-bottom:8px;cursor:pointer}
+.rowbtn.c{text-align:center;font-weight:650}
 .rowbtn.warn{color:var(--vermilion)}
 .rowbtn small{display:block;color:var(--ink-3);font-size:12px;margin-top:3px}
+.hr{height:1px;background:var(--rule);margin:16px 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g2 .rowbtn{margin-bottom:0;text-align:center;padding:13px 6px;font-size:14px}
 .hidden{display:none}
 
 .viewer{position:fixed;inset:0;z-index:50;background:#0D0F11;display:none;flex-direction:column}
@@ -180,15 +193,20 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 
 <main class="wrap" id="main"></main>
 
-<div class="fab"><button id="btn-add">상품 추가</button></div>
+<div class="fab"><button id="btn-add" aria-label="상품 추가">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button></div>
 
 <!-- 상품 편집 -->
 <div class="sheet" id="sheet-item">
   <div class="spanel">
     <div class="shd">
-      <button class="txt" data-close="sheet-item">닫기</button>
       <h2 id="item-title">상품 추가</h2>
-      <button class="txt" id="item-save" style="margin-left:auto">저장</button>
+      <div class="shd-r">
+        <button class="txt sub" data-close="sheet-item">닫기</button>
+        <span class="vsep-v"></span>
+        <button class="txt" id="item-save">저장</button>
+      </div>
     </div>
     <div class="sbody">
       <div class="picker">
@@ -243,9 +261,12 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 <div class="sheet" id="sheet-store">
   <div class="spanel">
     <div class="shd">
-      <button class="txt" data-close="sheet-store">닫기</button>
       <h2 id="store-title">매장 추가</h2>
-      <button class="txt" id="store-save" style="margin-left:auto">저장</button>
+      <div class="shd-r">
+        <button class="txt sub" data-close="sheet-store">닫기</button>
+        <span class="vsep-v"></span>
+        <button class="txt" id="store-save">저장</button>
+      </div>
     </div>
     <div class="sbody">
       <label class="f"><span>매장명 (일본어)</span><input class="in" id="s-name" placeholder="駿河屋 大阪日本橋店"></label>
@@ -265,8 +286,8 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 <div class="sheet" id="sheet-set">
   <div class="spanel">
     <div class="shd">
-      <button class="txt" data-close="sheet-set">닫기</button>
       <h2>설정</h2>
+      <div class="shd-r"><button class="txt" data-close="sheet-set">닫기</button></div>
     </div>
     <div class="sbody">
       <div class="two">
@@ -274,13 +295,17 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
         <label class="f"><span>면세 기준 (엔)</span><input class="in" id="g-tax" type="number" inputmode="numeric"></label>
       </div>
       <label class="f"><span>환율 — 100엔당 원화</span><input class="in" id="g-krw" type="number" inputmode="numeric"></label>
-      <button class="rowbtn" id="g-savemeta">예산·환율 저장</button>
-      <button class="rowbtn" id="g-addstore">매장 추가<small>여행 중 새로 발견한 가게</small></button>
-      <button class="rowbtn" id="g-export">백업 내보내기<small id="g-exportsub">사진까지 파일 하나로</small></button>
-      <button class="rowbtn" id="g-import">백업 가져오기<small>내보낸 파일로 되돌리기</small></button>
+      <button class="rowbtn c" id="g-savemeta">예산·환율 저장</button>
+      <button class="rowbtn c" id="g-addstore">매장 추가</button>
+      <div class="hr"></div>
+      <div class="g2">
+        <button class="rowbtn" id="g-export">백업 내보내기</button>
+        <button class="rowbtn" id="g-import">백업 가져오기</button>
+        <button class="rowbtn" id="g-uncheck">체크 전부 지우기</button>
+        <button class="rowbtn warn" id="g-reseed">초기 목록 복원</button>
+      </div>
+      <div class="hint" id="g-exportsub" style="margin:10px 0 0">사진까지 파일 하나로 저장됩니다. 하루 한 번 내보내두세요.</div>
       <input type="file" id="in-imp" accept="application/json,.json" class="hidden">
-      <button class="rowbtn" id="g-uncheck">체크 전부 지우기</button>
-      <button class="rowbtn warn" id="g-reseed">초기 목록 다시 불러오기<small>지금 데이터를 지우고 data.js 내용으로</small></button>
     </div>
   </div>
 </div>
@@ -427,13 +452,14 @@ function buildFilters(){
   var areas = [];
   S.stores.forEach(function(s){ if (s.area && areas.indexOf(s.area) < 0) areas.push(s.area); });
   filters.innerHTML = "";
-  mkChip("남은 것만", fLeft, function(){ fLeft = !fLeft; buildFilters(); render(); });
+  mkChip("남은 것만", fLeft, function(){ fLeft = !fLeft; buildFilters(); render(); }, "tog");
+  var sep = document.createElement("span"); sep.className = "fsep"; filters.appendChild(sep);
   mkChip("전체", fArea === "ALL", function(){ fArea = "ALL"; buildFilters(); render(); });
   areas.forEach(function(a){ mkChip(a, fArea === a, function(){ fArea = a; buildFilters(); render(); }); });
 }
-function mkChip(label, on, fn){
+function mkChip(label, on, fn, cls){
   var b = document.createElement("button");
-  b.className = "chip"; b.type = "button"; b.textContent = label;
+  b.className = "chip" + (cls ? " " + cls : ""); b.type = "button"; b.textContent = label;
   b.setAttribute("aria-pressed", on ? "true" : "false");
   b.addEventListener("click", fn);
   filters.appendChild(b);
@@ -724,7 +750,9 @@ document.getElementById("btn-settings").addEventListener("click", function(){
   document.getElementById("g-tax").value = S.meta.taxFreeMin || 5000;
   document.getElementById("g-krw").value = S.meta.krwPer100 || 900;
   var last = S.meta.lastBackup;
-  document.getElementById("g-exportsub").textContent = last ? "마지막 백업 " + last : "사진까지 파일 하나로";
+  document.getElementById("g-exportsub").textContent = last
+    ? "마지막 백업 " + last + " · 사진까지 파일 하나로 저장됩니다."
+    : "사진까지 파일 하나로 저장됩니다. 하루 한 번 내보내두세요.";
   openSheet("sheet-set");
 });
 function saveMeta(){ return put("kv", { k: "meta", v: S.meta }); }
