@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>오사카 쇼핑</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="오사카 쇼핑">
+<meta name="theme-color" content="#E7E9E6">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{
+  --paper:#E7E9E6; --card:#FFF; --ink:#16191C; --ink-2:#5A6169; --ink-3:#949BA1;
+  --rule:#D2D6D2; --indigo:#22406B; --vermilion:#C8322E; --moss:#1D6B4F; --shade:#EDF0F4;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%;
+  padding-bottom:calc(90px + env(safe-area-inset-bottom));
+}
+button,input,select,textarea{font-family:inherit;font-size:16px}
+.wrap{max-width:620px;margin:0 auto;padding:0 12px}
+
+header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
+  backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--rule);
+  padding-top:env(safe-area-inset-top)}
+.hbar{display:flex;align-items:center;gap:9px;padding:10px 0 8px}
+.htitle{font-size:18px;font-weight:700;letter-spacing:-.02em;margin:0}
+.hdate{font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.hspend{margin-left:auto;font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.hspend b{color:var(--ink);font-weight:700}
+.hspend.over b{color:var(--vermilion)}
+.gear{width:34px;height:34px;border:1px solid var(--rule);background:var(--card);border-radius:9px;
+  display:grid;place-items:center;color:var(--ink-2);cursor:pointer;padding:0;flex:0 0 auto}
+.filters{display:flex;gap:6px;overflow-x:auto;padding:0 0 9px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
+  border-radius:999px;padding:6px 13px;font-size:13.5px;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
+
+.store{margin:18px 0 0}
+.shead{display:flex;align-items:flex-start;gap:9px;padding:0 2px 6px}
+.sname{font-size:16.5px;font-weight:700;letter-spacing:-.01em;margin:0;line-height:1.25}
+.syomi{font-size:12.5px;color:var(--indigo);margin-top:2px;font-weight:600}
+.smeta{font-size:12px;color:var(--ink-2);margin-top:2px}
+.sright{margin-left:auto;display:flex;gap:7px;align-items:center;flex:0 0 auto}
+.daypin{font-size:11.5px;font-weight:700;color:var(--indigo);border:1.5px solid var(--indigo);
+  border-radius:4px;padding:1px 6px}
+.iconbtn{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--rule);
+  border-radius:9px;background:var(--card);color:var(--indigo);text-decoration:none;cursor:pointer;padding:0}
+.gauge{display:flex;align-items:center;gap:8px;padding:0 2px 10px;font-size:12px;color:var(--ink-2)}
+.gtrack{flex:1;height:5px;background:#D7DBD7;border-radius:3px;overflow:hidden}
+.gfill{height:100%;width:0;background:var(--indigo);border-radius:3px;transition:width .25s ease}
+.gauge.hit .gfill{background:var(--moss)}
+.gauge.hit .gtxt{color:var(--moss);font-weight:700}
+.gtxt{flex:0 0 auto;font-variant-numeric:tabular-nums}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(min-width:560px){.grid{grid-template-columns:1fr 1fr 1fr}}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:12px;overflow:hidden;
+  display:flex;flex-direction:column}
+.card.on{opacity:.52}
+.photo{position:relative;width:100%;aspect-ratio:1/1;background:var(--shade);border:0;padding:0;
+  display:grid;place-items:center;cursor:pointer;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo .ph{font-size:30px;font-weight:700;color:#93A3B8}
+.mark{position:absolute;top:7px;right:7px;width:36px;height:36px;border-radius:50%;border:0;padding:0;
+  background:rgba(255,255,255,.92);box-shadow:0 1px 3px rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer}
+.mark i{display:block;width:20px;height:20px;border:2px solid #B7BEC5;border-radius:50%}
+.card.on .mark i{border-color:var(--indigo);background:var(--indigo) no-repeat center/13px
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")}
+.cbody{padding:9px 10px 11px;text-align:left;background:none;border:0;cursor:pointer;flex:1;width:100%}
+.jp{font-size:14px;font-weight:650;line-height:1.32;letter-spacing:-.01em;word-break:break-word;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card.on .jp{text-decoration:line-through}
+.yomi{font-size:12.5px;color:var(--indigo);font-weight:600;margin-top:3px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ko{font-size:11.5px;color:var(--ink-3);margin-top:2px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.crow{display:flex;align-items:center;gap:6px;margin-top:7px}
+.yen{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.pri{font-size:10.5px;font-weight:700;border-radius:3px;padding:1px 5px;line-height:1.5}
+.pri.A{background:var(--vermilion);color:#fff}
+.pri.B{background:#E3E7EC;color:var(--indigo)}
+.pri.C{background:#EDEFED;color:var(--ink-3)}
+.empty{padding:34px 16px;text-align:center;color:var(--ink-2);font-size:14px}
+
+.fab{position:fixed;left:0;right:0;bottom:0;z-index:18;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(rgba(231,233,230,0),rgba(231,233,230,.96) 38%)}
+.fab button{width:100%;max-width:596px;margin:0 auto;display:block;border:0;border-radius:12px;
+  background:var(--indigo);color:#fff;padding:14px;font-size:15.5px;font-weight:650;cursor:pointer}
+
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.35);display:none}
+.sheet.open{display:block}
+.spanel{position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow-y:auto;background:var(--paper);
+  border-radius:16px 16px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling:touch}
+.shd{position:sticky;top:0;background:var(--paper);display:flex;align-items:center;gap:10px;
+  padding:14px 14px 10px;border-bottom:1px solid var(--rule);z-index:1}
+.shd h2{font-size:16px;font-weight:700;margin:0}
+.txt{border:0;background:none;color:var(--indigo);font-weight:650;font-size:15px;cursor:pointer;padding:6px 2px}
+.txt.del{color:var(--vermilion)}
+.sbody{padding:14px}
+label.f{display:block;margin-bottom:13px}
+label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px}
+.in{width:100%;border:1px solid var(--rule);border-radius:9px;padding:10px 11px;background:var(--card);color:var(--ink)}
+.two{display:flex;gap:10px}.two>*{flex:1}
+.prirow{display:flex;gap:6px}
+.prirow button{flex:1;border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
+  border-radius:9px;padding:10px 0;font-size:14px;cursor:pointer}
+.prirow button[aria-pressed="true"]{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:700}
+.picker{display:flex;gap:10px;margin-bottom:14px}
+.pv{width:104px;height:104px;border-radius:10px;background:var(--shade);overflow:hidden;flex:0 0 auto;
+  display:grid;place-items:center;color:var(--ink-3);font-size:12px;text-align:center;padding:6px}
+.pv img{width:100%;height:100%;object-fit:cover}
+.pbtns{flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.pbtns button{border:1px solid var(--rule);background:var(--card);color:var(--ink);border-radius:9px;
+  padding:11px;font-size:14px;cursor:pointer}
+.hint{font-size:12px;color:var(--ink-3);margin:-6px 0 14px}
+.rowbtn{width:100%;text-align:left;border:1px solid var(--rule);background:var(--card);color:var(--ink);
+  border-radius:10px;padding:13px 12px;font-size:14.5px;margin-bottom:8px;cursor:pointer}
+.rowbtn.warn{color:var(--vermilion)}
+.rowbtn small{display:block;color:var(--ink-3);font-size:12px;margin-top:3px}
+.hidden{display:none}
+
+.viewer{position:fixed;inset:0;z-index:50;background:#0D0F11;display:none;flex-direction:column}
+.viewer.open{display:flex}
+.vstage{flex:1 1 auto;position:relative;overflow:hidden;touch-action:none;min-height:34vh}
+.vstage img{position:absolute;top:50%;left:50%;max-width:100%;max-height:100%;transform-origin:0 0;
+  will-change:transform;user-select:none;-webkit-user-drag:none}
+.vempty{position:absolute;inset:0;display:grid;place-items:center;color:#4B535B;font-size:14px}
+.vclose{position:absolute;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:2;width:42px;height:42px;
+  border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.vcard{background:var(--card);padding:15px 16px calc(15px + env(safe-area-inset-bottom));border-top:1px solid var(--rule);
+  max-height:56vh;overflow-y:auto}
+.vjp{font-size:23px;font-weight:700;line-height:1.28;letter-spacing:-.01em;word-break:break-word}
+.vyomi{font-size:16px;color:var(--indigo);font-weight:650;margin-top:6px;line-height:1.35}
+.vko{font-size:13.5px;color:var(--ink-2);margin-top:5px}
+.vrow{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.vyen{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.vcode{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.vstore{font-size:12.5px;color:var(--indigo);font-weight:600;margin-left:auto;text-align:right}
+.vbtns{display:flex;gap:8px;margin-top:13px}
+.vtick{flex:1;border:0;border-radius:10px;padding:13px;background:var(--indigo);color:#fff;
+  font-size:15px;font-weight:650;cursor:pointer}
+.vtick.on{background:#EDEFED;color:var(--ink-2)}
+.vedit{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);color:var(--ink);
+  border-radius:10px;padding:13px 18px;font-size:15px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hbar">
+      <h1 class="htitle" id="h-title">오사카 쇼핑</h1>
+      <span class="hdate" id="h-date"></span>
+      <span class="hspend" id="h-spend"></span>
+      <button class="gear" id="btn-settings" aria-label="설정">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.61.65 1.06 1.28 1.09H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+      </button>
+    </div>
+    <div class="filters" id="filters"></div>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<div class="fab"><button id="btn-add">상품 추가</button></div>
+
+<!-- 상품 편집 -->
+<div class="sheet" id="sheet-item">
+  <div class="spanel">
+    <div class="shd">
+      <button class="txt" data-close="sheet-item">닫기</button>
+      <h2 id="item-title">상품 추가</h2>
+      <button class="txt" id="item-save" style="margin-left:auto">저장</button>
+    </div>
+    <div class="sbody">
+      <div class="picker">
+        <div class="pv" id="pv">사진 없음</div>
+        <div class="pbtns">
+          <button id="btn-cam">사진 찍기</button>
+          <button id="btn-lib">앨범에서 선택</button>
+          <button id="btn-rmphoto" class="hidden">사진 지우기</button>
+        </div>
+      </div>
+      <div class="hint">가로 900px로 자동 축소되어 폰에 저장됩니다.</div>
+      <input type="file" id="in-cam" accept="image/*" capture="environment" class="hidden">
+      <input type="file" id="in-lib" accept="image/*" class="hidden">
+
+      <label class="f"><span>매장</span>
+        <select class="in" id="f-store"></select>
+      </label>
+      <label class="f"><span>일본어 정식명칭</span>
+        <input class="in" id="f-jp" placeholder="リーメント ぷちサンプル">
+      </label>
+      <label class="f"><span>한글 발음</span>
+        <input class="in" id="f-yomi" placeholder="리멘토 푸치산푸루">
+      </label>
+      <label class="f"><span>제품 설명</span>
+        <input class="in" id="f-ko" placeholder="미니어처 세트, 박스 단위">
+      </label>
+      <div class="two">
+        <label class="f"><span>가격 (엔)</span>
+          <input class="in" id="f-yen" type="number" inputmode="numeric" placeholder="4400">
+        </label>
+        <label class="f"><span>品番 / JAN</span>
+          <input class="in" id="f-code" placeholder="선택">
+        </label>
+      </div>
+      <label class="f"><span>우선순위</span>
+        <div class="prirow" id="f-pri">
+          <button type="button" data-p="A">A 필수</button>
+          <button type="button" data-p="B">B 있으면</button>
+          <button type="button" data-p="C">C 눈에 띄면</button>
+        </div>
+      </label>
+      <button class="rowbtn warn hidden" id="item-del">이 상품 삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- 매장 편집 -->
+<div class="sheet" id="sheet-store">
+  <div class="spanel">
+    <div class="shd">
+      <button class="txt" data-close="sheet-store">닫기</button>
+      <h2 id="store-title">매장 추가</h2>
+      <button class="txt" id="store-save" style="margin-left:auto">저장</button>
+    </div>
+    <div class="sbody">
+      <label class="f"><span>매장명 (일본어)</span><input class="in" id="s-name" placeholder="駿河屋 大阪日本橋店"></label>
+      <label class="f"><span>한글 발음</span><input class="in" id="s-yomi" placeholder="스루가야 오사카 니혼바시텐"></label>
+      <div class="two">
+        <label class="f"><span>구역</span><input class="in" id="s-area" placeholder="덴덴타운"></label>
+        <label class="f"><span>며칠차</span><input class="in" id="s-day" type="number" inputmode="numeric" placeholder="1"></label>
+      </div>
+      <label class="f"><span>메모</span><input class="in" id="s-ko" placeholder="지하 식완 코너 먼저"></label>
+      <label class="f"><span>구글맵 링크</span><input class="in" id="s-map" placeholder="공유 > 링크 복사 붙여넣기"></label>
+      <button class="rowbtn warn hidden" id="store-del">이 매장 삭제 (상품도 함께)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 설정 -->
+<div class="sheet" id="sheet-set">
+  <div class="spanel">
+    <div class="shd">
+      <button class="txt" data-close="sheet-set">닫기</button>
+      <h2>설정</h2>
+    </div>
+    <div class="sbody">
+      <div class="two">
+        <label class="f"><span>전체 예산 (엔)</span><input class="in" id="g-budget" type="number" inputmode="numeric"></label>
+        <label class="f"><span>면세 기준 (엔)</span><input class="in" id="g-tax" type="number" inputmode="numeric"></label>
+      </div>
+      <button class="rowbtn" id="g-savemeta">예산 저장</button>
+      <button class="rowbtn" id="g-addstore">매장 추가<small>여행 중 새로 발견한 가게</small></button>
+      <button class="rowbtn" id="g-export">백업 내보내기<small id="g-exportsub">사진까지 파일 하나로</small></button>
+      <button class="rowbtn" id="g-import">백업 가져오기<small>내보낸 파일로 되돌리기</small></button>
+      <input type="file" id="in-imp" accept="application/json,.json" class="hidden">
+      <button class="rowbtn" id="g-uncheck">체크 전부 지우기</button>
+      <button class="rowbtn warn" id="g-reseed">초기 목록 다시 불러오기<small>지금 데이터를 지우고 data.js 내용으로</small></button>
+    </div>
+  </div>
+</div>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="상품 상세">
+  <div class="vstage" id="vstage">
+    <button class="vclose" id="vclose" aria-label="닫기">&times;</button>
+    <img id="vimg" alt="" hidden>
+    <div class="vempty" id="vempty" hidden>사진 없음</div>
+  </div>
+  <div class="vcard">
+    <div class="vjp" id="vjp"></div>
+    <div class="vyomi" id="vyomi"></div>
+    <div class="vko" id="vko"></div>
+    <div class="vrow">
+      <span class="vyen" id="vyen"></span>
+      <span class="vcode" id="vcode"></span>
+      <span class="vstore" id="vstore"></span>
+    </div>
+    <div class="vbtns">
+      <button class="vtick" id="vtick"></button>
+      <button class="vedit" id="vedit">편집</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ═══ IndexedDB ═══ */
+var DB = null;
+function open(){
+  return new Promise(function(res, rej){
+    var r = indexedDB.open("osaka", 1);
+    r.onupgradeneeded = function(){
+      var d = r.result;
+      if (!d.objectStoreNames.contains("kv")) d.createObjectStore("kv", { keyPath: "k" });
+      if (!d.objectStoreNames.contains("stores")) d.createObjectStore("stores", { keyPath: "id" });
+      if (!d.objectStoreNames.contains("items")) d.createObjectStore("items", { keyPath: "id" });
+      if (!d.objectStoreNames.contains("photos")) d.createObjectStore("photos", { keyPath: "id" });
+    };
+    r.onsuccess = function(){ DB = r.result; res(DB); };
+    r.onerror = function(){ rej(r.error); };
+  });
+}
+function tx(names, mode){ return DB.transaction(names, mode); }
+function req(r){ return new Promise(function(res, rej){ r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); }; }); }
+function all(n){ return req(tx([n], "readonly").objectStore(n).getAll()); }
+function put(n, v){ return req(tx([n], "readwrite").objectStore(n).put(v)); }
+function del(n, k){ return req(tx([n], "readwrite").objectStore(n).delete(k)); }
+function get(n, k){ return req(tx([n], "readonly").objectStore(n).get(k)); }
+function clearAll(){
+  return Promise.all(["kv","stores","items","photos"].map(function(n){
+    return req(tx([n], "readwrite").objectStore(n).clear());
+  }));
+}
+
+/* ═══ state ═══ */
+var S = { meta: {}, stores: [], items: [] };
+var urls = {};
+var uid = function(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
+var yenf = function(n){ return "¥" + Number(n||0).toLocaleString("ja-JP"); };
+
+function load(){
+  return Promise.all([get("kv","meta"), all("stores"), all("items")]).then(function(r){
+    S.meta = (r[0] && r[0].v) || {};
+    S.stores = r[1].sort(function(a,b){ return (a.ord||0) - (b.ord||0); });
+    S.items = r[2].sort(function(a,b){ return (a.ord||0) - (b.ord||0); });
+  });
+}
+function seed(){
+  var meta = { title: TRIP.title, dates: TRIP.dates, budgetYen: TRIP.budgetYen, taxFreeMin: TRIP.taxFreeMin };
+  var ops = [put("kv", { k: "meta", v: meta })];
+  STORES.forEach(function(s, i){
+    var sid = uid("s");
+    ops.push(put("stores", { id: sid, ord: i, area: s.area||"", day: s.day||null,
+      name: s.name||"", yomi: s.yomi||"", ko: s.ko||"", map: s.map||"" }));
+    (s.items||[]).forEach(function(it, j){
+      ops.push(put("items", { id: uid("i"), storeId: sid, ord: j, jp: it.jp||"", yomi: it.yomi||"",
+        ko: it.ko||"", code: it.code||"", yen: Number(it.yen)||0, pri: it.pri||"B",
+        photoId: null, checked: 0 }));
+    });
+  });
+  return Promise.all(ops);
+}
+
+function photoURL(id){
+  if (!id) return Promise.resolve(null);
+  if (urls[id]) return Promise.resolve(urls[id]);
+  return get("photos", id).then(function(p){
+    if (!p || !p.blob) return null;
+    urls[id] = URL.createObjectURL(p.blob);
+    return urls[id];
+  });
+}
+
+/* ═══ image resize ═══ */
+function shrink(file){
+  return new Promise(function(res, rej){
+    var fr = new FileReader();
+    fr.onload = function(){
+      var im = new Image();
+      im.onload = function(){
+        var MAX = 900, w = im.width, h = im.height;
+        if (w > MAX || h > MAX){ var k = MAX / Math.max(w, h); w = Math.round(w*k); h = Math.round(h*k); }
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        c.getContext("2d").drawImage(im, 0, 0, w, h);
+        c.toBlob(function(b){ b ? res(b) : rej(new Error("변환 실패")); }, "image/jpeg", 0.75);
+      };
+      im.onerror = function(){ rej(new Error("이미지를 읽지 못했습니다")); };
+      im.src = fr.result;
+    };
+    fr.onerror = function(){ rej(new Error("파일을 읽지 못했습니다")); };
+    fr.readAsDataURL(file);
+  });
+}
+
+/* ═══ filters ═══ */
+var fArea = "ALL", fLeft = false;
+var filters = document.getElementById("filters");
+function buildFilters(){
+  var areas = [];
+  S.stores.forEach(function(s){ if (s.area && areas.indexOf(s.area) < 0) areas.push(s.area); });
+  filters.innerHTML = "";
+  mkChip("남은 것만", fLeft, function(){ fLeft = !fLeft; buildFilters(); render(); });
+  mkChip("전체", fArea === "ALL", function(){ fArea = "ALL"; buildFilters(); render(); });
+  areas.forEach(function(a){ mkChip(a, fArea === a, function(){ fArea = a; buildFilters(); render(); }); });
+}
+function mkChip(label, on, fn){
+  var b = document.createElement("button");
+  b.className = "chip"; b.type = "button"; b.textContent = label;
+  b.setAttribute("aria-pressed", on ? "true" : "false");
+  b.addEventListener("click", fn);
+  filters.appendChild(b);
+}
+
+/* ═══ render ═══ */
+var main = document.getElementById("main");
+function render(){
+  main.innerHTML = "";
+  var shown = 0;
+
+  S.stores.forEach(function(s){
+    if (fArea !== "ALL" && s.area !== fArea) return;
+    var mine = S.items.filter(function(i){ return i.storeId === s.id; });
+    var vis = fLeft ? mine.filter(function(i){ return !i.checked; }) : mine;
+    if (!vis.length) return;
+    shown += vis.length;
+
+    var doneN = mine.filter(function(i){ return i.checked; }).length;
+    var sum = mine.reduce(function(a,i){ return a + (i.checked ? Number(i.yen||0) : 0); }, 0);
+
+    var sec = document.createElement("section"); sec.className = "store";
+
+    var head = document.createElement("div"); head.className = "shead";
+    var t = document.createElement("div"); t.style.minWidth = "0";
+    var h = document.createElement("h2"); h.className = "sname"; h.textContent = s.name; t.appendChild(h);
+    if (s.yomi){ var y = document.createElement("div"); y.className = "syomi"; y.textContent = s.yomi; t.appendChild(y); }
+    var m = document.createElement("div"); m.className = "smeta";
+    m.textContent = (s.ko ? s.ko + "  ·  " : "") + doneN + "/" + mine.length;
+    t.appendChild(m);
+    head.appendChild(t);
+
+    var right = document.createElement("div"); right.className = "sright";
+    if (s.day){ var d = document.createElement("span"); d.className = "daypin"; d.textContent = s.day + "일차"; right.appendChild(d); }
+    if (s.map && s.map.indexOf("http") === 0){
+      var a = document.createElement("a"); a.className = "iconbtn"; a.href = s.map; a.target = "_blank"; a.rel = "noopener";
+      a.setAttribute("aria-label", "지도에서 열기");
+      a.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+      right.appendChild(a);
+    }
+    var eb = document.createElement("button"); eb.className = "iconbtn"; eb.type = "button";
+    eb.setAttribute("aria-label", "매장 편집");
+    eb.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+    eb.addEventListener("click", function(){ openStore(s); });
+    right.appendChild(eb);
+    head.appendChild(right);
+    sec.appendChild(head);
+
+    var min = Number(S.meta.taxFreeMin) || 5000;
+    var hit = sum >= min;
+    var g = document.createElement("div"); g.className = "gauge" + (hit ? " hit" : "");
+    g.innerHTML = '<div class="gtrack"><div class="gfill"></div></div><span class="gtxt"></span>';
+    g.querySelector(".gfill").style.width = Math.min(100, Math.round(sum / min * 100)) + "%";
+    g.querySelector(".gtxt").textContent = hit ? "면세 가능 " + yenf(sum) : yenf(sum) + " / 면세 " + yenf(min);
+    sec.appendChild(g);
+
+    var grid = document.createElement("div"); grid.className = "grid";
+    vis.forEach(function(it){ grid.appendChild(cardOf(it, s)); });
+    sec.appendChild(grid);
+    main.appendChild(sec);
+  });
+
+  if (!shown){
+    var e = document.createElement("div"); e.className = "empty";
+    e.textContent = S.items.length ? (fLeft ? "이 구역은 다 샀습니다." : "표시할 항목이 없습니다.")
+                                   : "상품 추가를 눌러 목록을 만드세요.";
+    main.appendChild(e);
+  }
+
+  var spent = S.items.reduce(function(a,i){ return a + (i.checked ? Number(i.yen||0) : 0); }, 0);
+  var bud = Number(S.meta.budgetYen) || 0;
+  var hs = document.getElementById("h-spend");
+  hs.innerHTML = "<b>" + yenf(spent) + "</b>";
+  if (bud) hs.innerHTML += " / " + yenf(bud);
+  hs.className = "hspend" + (bud && spent > bud ? " over" : "");
+}
+
+function cardOf(it, s){
+  var el = document.createElement("div");
+  el.className = "card" + (it.checked ? " on" : "");
+
+  var ph = document.createElement("button");
+  ph.className = "photo"; ph.type = "button"; ph.setAttribute("aria-label", "사진 크게 보기");
+  var span = document.createElement("span"); span.className = "ph";
+  span.textContent = (it.jp || "?").trim().charAt(0);
+  ph.appendChild(span);
+  if (it.photoId) photoURL(it.photoId).then(function(u){
+    if (!u) return;
+    var im = document.createElement("img"); im.src = u; im.alt = it.jp;
+    ph.innerHTML = ""; ph.appendChild(im); ph.appendChild(mk);
+  });
+  ph.addEventListener("click", function(){ openViewer(it, s); });
+
+  var mk = document.createElement("button");
+  mk.className = "mark"; mk.type = "button"; mk.innerHTML = "<i></i>";
+  mk.setAttribute("aria-label", "구매 완료 표시");
+  mk.setAttribute("aria-pressed", it.checked ? "true" : "false");
+  mk.addEventListener("click", function(ev){ ev.stopPropagation(); toggle(it); });
+  ph.appendChild(mk);
+
+  var body = document.createElement("button"); body.className = "cbody"; body.type = "button";
+  var jp = document.createElement("div"); jp.className = "jp"; jp.textContent = it.jp; body.appendChild(jp);
+  if (it.yomi){ var yo = document.createElement("div"); yo.className = "yomi"; yo.textContent = it.yomi; body.appendChild(yo); }
+  if (it.ko){ var ko = document.createElement("div"); ko.className = "ko"; ko.textContent = it.ko; body.appendChild(ko); }
+  var row = document.createElement("div"); row.className = "crow";
+  var yn = document.createElement("span"); yn.className = "yen"; yn.textContent = yenf(it.yen); row.appendChild(yn);
+  if (it.pri){ var p = document.createElement("span"); p.className = "pri " + it.pri; p.textContent = it.pri; row.appendChild(p); }
+  body.appendChild(row);
+  body.addEventListener("click", function(){ openViewer(it, s); });
+
+  el.appendChild(ph); el.appendChild(body);
+  return el;
+}
+
+function toggle(it){
+  it.checked = it.checked ? 0 : 1;
+  put("items", it).then(function(){ render(); if (vItem && vItem.id === it.id) paintTick(); });
+}
+
+/* ═══ sheets ═══ */
+function openSheet(id){ document.getElementById(id).classList.add("open"); document.body.style.overflow = "hidden"; }
+function closeSheet(id){ document.getElementById(id).classList.remove("open"); document.body.style.overflow = ""; }
+Array.prototype.forEach.call(document.querySelectorAll("[data-close]"), function(b){
+  b.addEventListener("click", function(){ closeSheet(b.getAttribute("data-close")); });
+});
+Array.prototype.forEach.call(document.querySelectorAll(".sheet"), function(sh){
+  sh.addEventListener("click", function(e){ if (e.target === sh){ sh.classList.remove("open"); document.body.style.overflow = ""; } });
+});
+
+/* ── item sheet ── */
+var edit = null, pendingBlob = null, pendingClear = false, pri = "B";
+var pv = document.getElementById("pv");
+
+function openItem(it, presetStore){
+  edit = it || null; pendingBlob = null; pendingClear = false;
+  document.getElementById("item-title").textContent = it ? "상품 편집" : "상품 추가";
+  document.getElementById("item-del").classList.toggle("hidden", !it);
+
+  var sel = document.getElementById("f-store");
+  sel.innerHTML = "";
+  S.stores.forEach(function(s){
+    var o = document.createElement("option"); o.value = s.id; o.textContent = s.name; sel.appendChild(o);
+  });
+  var o2 = document.createElement("option"); o2.value = "__new"; o2.textContent = "+ 새 매장 추가"; sel.appendChild(o2);
+  sel.value = it ? it.storeId : (presetStore || (S.stores[0] && S.stores[0].id) || "__new");
+
+  document.getElementById("f-jp").value = it ? it.jp : "";
+  document.getElementById("f-yomi").value = it ? it.yomi : "";
+  document.getElementById("f-ko").value = it ? it.ko : "";
+  document.getElementById("f-yen").value = it ? (it.yen || "") : "";
+  document.getElementById("f-code").value = it ? it.code : "";
+  setPri(it ? (it.pri || "B") : "B");
+  paintPv(it && it.photoId ? it.photoId : null, null);
+  openSheet("sheet-item");
+}
+function setPri(p){
+  pri = p;
+  Array.prototype.forEach.call(document.querySelectorAll("#f-pri button"), function(b){
+    b.setAttribute("aria-pressed", b.getAttribute("data-p") === p ? "true" : "false");
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll("#f-pri button"), function(b){
+  b.addEventListener("click", function(){ setPri(b.getAttribute("data-p")); });
+});
+function paintPv(photoId, blob){
+  var rm = document.getElementById("btn-rmphoto");
+  if (blob){
+    pv.innerHTML = ""; var i = document.createElement("img"); i.src = URL.createObjectURL(blob); pv.appendChild(i);
+    rm.classList.remove("hidden"); return;
+  }
+  if (photoId){
+    photoURL(photoId).then(function(u){
+      if (u){ pv.innerHTML = ""; var i = document.createElement("img"); i.src = u; pv.appendChild(i); rm.classList.remove("hidden"); }
+      else { pv.textContent = "사진 없음"; rm.classList.add("hidden"); }
+    });
+    return;
+  }
+  pv.textContent = "사진 없음"; rm.classList.add("hidden");
+}
+document.getElementById("btn-cam").addEventListener("click", function(){ document.getElementById("in-cam").click(); });
+document.getElementById("btn-lib").addEventListener("click", function(){ document.getElementById("in-lib").click(); });
+document.getElementById("btn-rmphoto").addEventListener("click", function(){
+  pendingBlob = null; pendingClear = true; paintPv(null, null);
+});
+function onPick(e){
+  var f = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!f) return;
+  shrink(f).then(function(b){ pendingBlob = b; pendingClear = false; paintPv(null, b); })
+           .catch(function(err){ alert(err.message); });
+}
+document.getElementById("in-cam").addEventListener("change", onPick);
+document.getElementById("in-lib").addEventListener("change", onPick);
+
+document.getElementById("item-save").addEventListener("click", function(){
+  var jp = document.getElementById("f-jp").value.trim();
+  if (!jp){ alert("일본어 정식명칭을 입력하세요."); return; }
+  var sid = document.getElementById("f-store").value;
+  if (sid === "__new"){ alert("먼저 매장을 추가하세요. 설정 > 매장 추가."); return; }
+
+  var it = edit || { id: uid("i"), ord: Date.now(), photoId: null, checked: 0 };
+  it.storeId = sid;
+  it.jp = jp;
+  it.yomi = document.getElementById("f-yomi").value.trim();
+  it.ko = document.getElementById("f-ko").value.trim();
+  it.yen = Number(document.getElementById("f-yen").value) || 0;
+  it.code = document.getElementById("f-code").value.trim();
+  it.pri = pri;
+
+  var chain = Promise.resolve();
+  if (pendingClear && it.photoId){ var old = it.photoId; it.photoId = null; chain = del("photos", old); }
+  if (pendingBlob){
+    var pid = it.photoId || uid("p");
+    it.photoId = pid;
+    chain = chain.then(function(){ return put("photos", { id: pid, blob: pendingBlob }); })
+                 .then(function(){ if (urls[pid]){ URL.revokeObjectURL(urls[pid]); delete urls[pid]; } });
+  }
+  chain.then(function(){ return put("items", it); })
+       .then(load).then(function(){ buildFilters(); render(); closeSheet("sheet-item"); })
+       .catch(function(e){ alert("저장하지 못했습니다. 저장 공간이 부족할 수 있습니다."); });
+});
+
+document.getElementById("item-del").addEventListener("click", function(){
+  if (!edit || !confirm("이 상품을 삭제할까요?")) return;
+  var p = edit.photoId ? del("photos", edit.photoId) : Promise.resolve();
+  p.then(function(){ return del("items", edit.id); })
+   .then(load).then(function(){ render(); closeSheet("sheet-item"); });
+});
+
+document.getElementById("btn-add").addEventListener("click", function(){
+  if (!S.stores.length){ openStore(null); return; }
+  openItem(null, null);
+});
+
+/* ── store sheet ── */
+var editS = null;
+function openStore(s){
+  editS = s || null;
+  document.getElementById("store-title").textContent = s ? "매장 편집" : "매장 추가";
+  document.getElementById("store-del").classList.toggle("hidden", !s);
+  document.getElementById("s-name").value = s ? s.name : "";
+  document.getElementById("s-yomi").value = s ? s.yomi : "";
+  document.getElementById("s-area").value = s ? s.area : "";
+  document.getElementById("s-day").value = s && s.day ? s.day : "";
+  document.getElementById("s-ko").value = s ? s.ko : "";
+  document.getElementById("s-map").value = s ? s.map : "";
+  openSheet("sheet-store");
+}
+document.getElementById("store-save").addEventListener("click", function(){
+  var name = document.getElementById("s-name").value.trim();
+  if (!name){ alert("매장명을 입력하세요."); return; }
+  var s = editS || { id: uid("s"), ord: Date.now() };
+  s.name = name;
+  s.yomi = document.getElementById("s-yomi").value.trim();
+  s.area = document.getElementById("s-area").value.trim();
+  s.day = Number(document.getElementById("s-day").value) || null;
+  s.ko = document.getElementById("s-ko").value.trim();
+  s.map = document.getElementById("s-map").value.trim();
+  put("stores", s).then(load).then(function(){ buildFilters(); render(); closeSheet("sheet-store"); });
+});
+document.getElementById("store-del").addEventListener("click", function(){
+  if (!editS) return;
+  var kids = S.items.filter(function(i){ return i.storeId === editS.id; });
+  if (!confirm("매장과 상품 " + kids.length + "개를 삭제할까요?")) return;
+  Promise.all(kids.map(function(i){
+    return (i.photoId ? del("photos", i.photoId) : Promise.resolve()).then(function(){ return del("items", i.id); });
+  })).then(function(){ return del("stores", editS.id); })
+     .then(load).then(function(){ buildFilters(); render(); closeSheet("sheet-store"); });
+});
+
+/* ── settings ── */
+document.getElementById("btn-settings").addEventListener("click", function(){
+  document.getElementById("g-budget").value = S.meta.budgetYen || "";
+  document.getElementById("g-tax").value = S.meta.taxFreeMin || 5000;
+  var last = S.meta.lastBackup;
+  document.getElementById("g-exportsub").textContent = last ? "마지막 백업 " + last : "사진까지 파일 하나로";
+  openSheet("sheet-set");
+});
+function saveMeta(){ return put("kv", { k: "meta", v: S.meta }); }
+document.getElementById("g-savemeta").addEventListener("click", function(){
+  S.meta.budgetYen = Number(document.getElementById("g-budget").value) || 0;
+  S.meta.taxFreeMin = Number(document.getElementById("g-tax").value) || 5000;
+  saveMeta().then(function(){ render(); closeSheet("sheet-set"); });
+});
+document.getElementById("g-addstore").addEventListener("click", function(){ closeSheet("sheet-set"); openStore(null); });
+document.getElementById("g-uncheck").addEventListener("click", function(){
+  if (!confirm("체크를 전부 지울까요?")) return;
+  Promise.all(S.items.map(function(i){ i.checked = 0; return put("items", i); }))
+    .then(function(){ render(); closeSheet("sheet-set"); });
+});
+document.getElementById("g-reseed").addEventListener("click", function(){
+  if (!confirm("지금 데이터를 모두 지우고 초기 목록으로 되돌립니다. 계속할까요?")) return;
+  Object.keys(urls).forEach(function(k){ URL.revokeObjectURL(urls[k]); delete urls[k]; });
+  clearAll().then(seed).then(load).then(function(){ buildFilters(); render(); closeSheet("sheet-set"); });
+});
+
+function blobToDataURL(b){
+  return new Promise(function(res){ var fr = new FileReader(); fr.onload = function(){ res(fr.result); }; fr.readAsDataURL(b); });
+}
+document.getElementById("g-export").addEventListener("click", function(){
+  all("photos").then(function(ps){
+    return Promise.all(ps.map(function(p){
+      return blobToDataURL(p.blob).then(function(d){ return { id: p.id, data: d }; });
+    }));
+  }).then(function(photos){
+    var pack = { v: 1, at: new Date().toISOString(), meta: S.meta, stores: S.stores, items: S.items, photos: photos };
+    var blob = new Blob([JSON.stringify(pack)], { type: "application/json" });
+    var name = "osaka-backup-" + new Date().toISOString().slice(0,10) + ".json";
+    var file = new File([blob], name, { type: "application/json" });
+    S.meta.lastBackup = new Date().toISOString().slice(5,10);
+    saveMeta();
+    if (navigator.canShare && navigator.canShare({ files: [file] })){
+      return navigator.share({ files: [file], title: name });
+    }
+    var u = URL.createObjectURL(blob);
+    var a = document.createElement("a"); a.href = u; a.download = name; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(u); }, 4000);
+  }).catch(function(err){
+    if (err && err.name === "AbortError") return;
+    alert("백업을 만들지 못했습니다. 사진이 너무 많으면 실패할 수 있습니다.");
+  });
+});
+document.getElementById("g-import").addEventListener("click", function(){ document.getElementById("in-imp").click(); });
+document.getElementById("in-imp").addEventListener("change", function(e){
+  var f = e.target.files && e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  if (!confirm("지금 데이터를 덮어씁니다. 계속할까요?")) return;
+  f.text().then(function(t){
+    var p = JSON.parse(t);
+    if (!p || !p.items) throw new Error("형식이 맞지 않습니다");
+    Object.keys(urls).forEach(function(k){ URL.revokeObjectURL(urls[k]); delete urls[k]; });
+    return clearAll().then(function(){
+      var ops = [put("kv", { k: "meta", v: p.meta || {} })];
+      (p.stores||[]).forEach(function(s){ ops.push(put("stores", s)); });
+      (p.items||[]).forEach(function(i){ ops.push(put("items", i)); });
+      (p.photos||[]).forEach(function(ph){
+        ops.push(fetch(ph.data).then(function(r){ return r.blob(); }).then(function(b){ return put("photos", { id: ph.id, blob: b }); }));
+      });
+      return Promise.all(ops);
+    });
+  }).then(load).then(function(){ buildFilters(); render(); closeSheet("sheet-set"); alert("복구했습니다."); })
+    .catch(function(err){ alert("가져오지 못했습니다: " + err.message); });
+});
+
+/* ═══ viewer ═══ */
+var viewer = document.getElementById("viewer"), vstage = document.getElementById("vstage");
+var vimg = document.getElementById("vimg"), vempty = document.getElementById("vempty");
+var vItem = null, vStore = null, sc = 1, tx0 = 0, ty0 = 0;
+
+function apply(){ vimg.style.transform = "translate(-50%,-50%) translate(" + tx0 + "px," + ty0 + "px) scale(" + sc + ")"; }
+function resetZoom(){ sc = 1; tx0 = 0; ty0 = 0; apply(); }
+function openViewer(it, s){
+  vItem = it; vStore = s;
+  document.getElementById("vjp").textContent = it.jp;
+  document.getElementById("vyomi").textContent = it.yomi || "";
+  document.getElementById("vko").textContent = it.ko || "";
+  document.getElementById("vyen").textContent = yenf(it.yen);
+  document.getElementById("vcode").textContent = it.code || "";
+  document.getElementById("vstore").textContent = s ? s.name : "";
+  vimg.hidden = true; vempty.hidden = false; vimg.removeAttribute("src");
+  if (it.photoId) photoURL(it.photoId).then(function(u){
+    if (u && vItem && vItem.id === it.id){ vimg.src = u; vimg.hidden = false; vempty.hidden = true; }
+  });
+  resetZoom(); paintTick();
+  viewer.classList.add("open"); document.body.style.overflow = "hidden";
+}
+function closeViewer(){ viewer.classList.remove("open"); document.body.style.overflow = ""; vItem = null; }
+function paintTick(){
+  if (!vItem) return;
+  var b = document.getElementById("vtick");
+  b.textContent = vItem.checked ? "구매 취소" : "구매 완료";
+  b.className = "vtick" + (vItem.checked ? " on" : "");
+}
+document.getElementById("vtick").addEventListener("click", function(){ if (vItem) toggle(vItem); });
+document.getElementById("vedit").addEventListener("click", function(){ var i = vItem; closeViewer(); openItem(i, null); });
+document.getElementById("vclose").addEventListener("click", closeViewer);
+document.addEventListener("keydown", function(e){ if (e.key === "Escape"){ closeViewer(); } });
+
+var pts = {}, d0 = 0, s0 = 1, bx = 0, by = 0, lastTap = 0;
+function dist(a,b){ var dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
+function clamp(v,lo,hi){ return Math.max(lo, Math.min(hi, v)); }
+vstage.addEventListener("touchstart", function(e){
+  if (e.target.closest(".vclose")) return;
+  for (var i=0;i<e.changedTouches.length;i++){ var t=e.changedTouches[i]; pts[t.identifier]={x:t.clientX,y:t.clientY}; }
+  var ids = Object.keys(pts);
+  if (ids.length === 2){ d0 = dist(pts[ids[0]], pts[ids[1]]); s0 = sc; bx = tx0; by = ty0; }
+  else if (ids.length === 1){
+    bx = tx0; by = ty0;
+    var now = Date.now();
+    if (now - lastTap < 300){ if (sc > 1.05) resetZoom(); else { sc = 2.5; apply(); } lastTap = 0; }
+    else lastTap = now;
+  }
+}, { passive: true });
+vstage.addEventListener("touchmove", function(e){
+  var ids = Object.keys(pts); if (!ids.length) return;
+  e.preventDefault();
+  var mv = {};
+  for (var i=0;i<e.touches.length;i++){ var t=e.touches[i]; if (pts[t.identifier]) mv[t.identifier]={x:t.clientX,y:t.clientY}; }
+  var m = Object.keys(mv);
+  if (m.length === 2 && d0){
+    sc = clamp(s0 * (dist(mv[m[0]], mv[m[1]]) / d0), 1, 6);
+    if (sc <= 1.01){ tx0 = 0; ty0 = 0; }
+    apply();
+  } else if (m.length === 1 && sc > 1.01){
+    tx0 = bx + (mv[m[0]].x - pts[m[0]].x); ty0 = by + (mv[m[0]].y - pts[m[0]].y); apply();
+  }
+}, { passive: false });
+function endT(e){
+  for (var i=0;i<e.changedTouches.length;i++) delete pts[e.changedTouches[i].identifier];
+  if (!Object.keys(pts).length){ d0 = 0; bx = tx0; by = ty0; }
+}
+vstage.addEventListener("touchend", endT, { passive: true });
+vstage.addEventListener("touchcancel", endT, { passive: true });
+vstage.addEventListener("dblclick", function(){ if (sc > 1.05) resetZoom(); else { sc = 2.5; apply(); } });
+
+/* ═══ boot ═══ */
+open().then(load).then(function(){
+  if (!S.stores.length && !S.items.length && typeof STORES !== "undefined" && STORES.length){
+    return seed().then(load);
+  }
+}).then(function(){
+  document.getElementById("h-title").textContent = S.meta.title || (typeof TRIP !== "undefined" ? TRIP.title : "쇼핑");
+  document.getElementById("h-date").textContent = S.meta.dates || (typeof TRIP !== "undefined" ? TRIP.dates : "");
+  buildFilters(); render();
+}).catch(function(e){
+  main.innerHTML = '<div class="empty">저장소를 열지 못했습니다. Safari 설정에서 쿠키·사이트 데이터 차단이 켜져 있는지 확인하세요.</div>';
+});
+
+if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0){
+  navigator.serviceWorker.register("sw.js").catch(function(){});
+}
+})();
+</script>
+</body>
+</html>
