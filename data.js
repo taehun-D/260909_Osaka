@@ -18,7 +18,8 @@ const TRIP = {
   title: "오사카 쇼핑",
   dates: "9/9 – 9/12",
   budgetYen: 120000,
-  taxFreeMin: 5000
+  taxFreeMin: 5000,
+  krwPer100: 900        // 환율: 100엔당 원화. 앱 설정에서도 바꿀 수 있습니다
 };
 
 const STORES = [

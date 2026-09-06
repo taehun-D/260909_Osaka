@@ -1,5 +1,5 @@
 /* 오프라인 캐시. 데이터나 사진을 바꾸면 아래 VERSION 숫자를 올리세요. */
-const VERSION = "osaka-v2";
+const VERSION = "osaka-v4";
 const CORE = ["./", "./index.html", "./data.js", "./manifest.json", "./icon-180.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {

@@ -34,6 +34,7 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .hdate{font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .hspend{margin-left:auto;font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .hspend b{color:var(--ink);font-weight:700}
+.hspend i{display:block;font-style:normal;font-size:11px;color:var(--ink-3);text-align:right;margin-top:1px}
 .hspend.over b{color:var(--vermilion)}
 .gear{width:34px;height:34px;border:1px solid var(--rule);background:var(--card);border-radius:9px;
   display:grid;place-items:center;color:var(--ink-2);cursor:pointer;padding:0;flex:0 0 auto}
@@ -84,6 +85,11 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .crow{display:flex;align-items:center;gap:6px;margin-top:7px}
 .yen{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.won{font-size:11.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.cmp{font-size:11px;margin-top:3px;line-height:1.35;font-variant-numeric:tabular-nums}
+.cmp .kr{color:var(--ink-3)}
+.cmp .save{color:var(--moss);font-weight:700}
+.cmp .over{color:var(--vermilion);font-weight:700}
 .pri{font-size:10.5px;font-weight:700;border-radius:3px;padding:1px 5px;line-height:1.5}
 .pri.A{background:var(--vermilion);color:#fff}
 .pri.B{background:#E3E7EC;color:var(--indigo)}
@@ -130,12 +136,9 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 
 .viewer{position:fixed;inset:0;z-index:50;background:#0D0F11;display:none;flex-direction:column}
 .viewer.open{display:flex}
-.vstage{flex:1 1 auto;position:relative;overflow:hidden;touch-action:none;min-height:34vh}
+.vstage{flex:1 1 auto;position:relative;overflow:hidden;touch-action:none}
 .vstage img{position:absolute;top:50%;left:50%;max-width:100%;max-height:100%;transform-origin:0 0;
   will-change:transform;user-select:none;-webkit-user-drag:none}
-.vempty{position:absolute;inset:0;display:grid;place-items:center;color:#4B535B;font-size:14px}
-.vclose{position:absolute;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:2;width:42px;height:42px;
-  border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:24px;line-height:1;cursor:pointer}
 .vcard{background:var(--card);padding:15px 16px calc(15px + env(safe-area-inset-bottom));border-top:1px solid var(--rule);
   max-height:56vh;overflow-y:auto}
 .vjp{font-size:23px;font-weight:700;line-height:1.28;letter-spacing:-.01em;word-break:break-word}
@@ -143,6 +146,11 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 .vko{font-size:13.5px;color:var(--ink-2);margin-top:5px}
 .vrow{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
 .vyen{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.vwon{font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.vcmp{font-size:13.5px;margin-top:7px;font-variant-numeric:tabular-nums}
+.vcmp .kr{color:var(--ink-2)}
+.vcmp .save{color:var(--moss);font-weight:700}
+.vcmp .over{color:var(--vermilion);font-weight:700}
 .vcode{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .vstore{font-size:12.5px;color:var(--indigo);font-weight:600;margin-left:auto;text-align:right}
 .vbtns{display:flex;gap:8px;margin-top:13px}
@@ -150,7 +158,7 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
   font-size:15px;font-weight:650;cursor:pointer}
 .vtick.on{background:#EDEFED;color:var(--ink-2)}
 .vedit{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);color:var(--ink);
-  border-radius:10px;padding:13px 18px;font-size:15px;cursor:pointer}
+  border-radius:10px;padding:13px 15px;font-size:15px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -210,11 +218,15 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
       <div class="two">
         <label class="f"><span>가격 (엔)</span>
           <input class="in" id="f-yen" type="number" inputmode="numeric" placeholder="4400">
+          <div class="hint" id="f-won" style="margin:5px 0 0">-</div>
         </label>
-        <label class="f"><span>品番 / JAN</span>
-          <input class="in" id="f-code" placeholder="선택">
+        <label class="f"><span>한국 가격 (원)</span>
+          <input class="in" id="f-krw" type="number" inputmode="numeric" placeholder="5800">
         </label>
       </div>
+      <label class="f"><span>品番 / JAN</span>
+        <input class="in" id="f-code" placeholder="선택">
+      </label>
       <label class="f"><span>우선순위</span>
         <div class="prirow" id="f-pri">
           <button type="button" data-p="A">A 필수</button>
@@ -261,7 +273,8 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
         <label class="f"><span>전체 예산 (엔)</span><input class="in" id="g-budget" type="number" inputmode="numeric"></label>
         <label class="f"><span>면세 기준 (엔)</span><input class="in" id="g-tax" type="number" inputmode="numeric"></label>
       </div>
-      <button class="rowbtn" id="g-savemeta">예산 저장</button>
+      <label class="f"><span>환율 — 100엔당 원화</span><input class="in" id="g-krw" type="number" inputmode="numeric"></label>
+      <button class="rowbtn" id="g-savemeta">예산·환율 저장</button>
       <button class="rowbtn" id="g-addstore">매장 추가<small>여행 중 새로 발견한 가게</small></button>
       <button class="rowbtn" id="g-export">백업 내보내기<small id="g-exportsub">사진까지 파일 하나로</small></button>
       <button class="rowbtn" id="g-import">백업 가져오기<small>내보낸 파일로 되돌리기</small></button>
@@ -274,9 +287,7 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 
 <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="상품 상세">
   <div class="vstage" id="vstage">
-    <button class="vclose" id="vclose" aria-label="닫기">&times;</button>
     <img id="vimg" alt="" hidden>
-    <div class="vempty" id="vempty" hidden>사진 없음</div>
   </div>
   <div class="vcard">
     <div class="vjp" id="vjp"></div>
@@ -284,12 +295,15 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
     <div class="vko" id="vko"></div>
     <div class="vrow">
       <span class="vyen" id="vyen"></span>
+      <span class="vwon" id="vwon"></span>
       <span class="vcode" id="vcode"></span>
       <span class="vstore" id="vstore"></span>
     </div>
+    <div class="vcmp" id="vcmp"></div>
     <div class="vbtns">
       <button class="vtick" id="vtick"></button>
       <button class="vedit" id="vedit">편집</button>
+      <button class="vedit" id="vclose">닫기</button>
     </div>
   </div>
 </div>
@@ -332,6 +346,24 @@ var S = { meta: {}, stores: [], items: [] };
 var urls = {};
 var uid = function(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
 var yenf = function(n){ return "¥" + Number(n||0).toLocaleString("ja-JP"); };
+var rate = function(){ var r = Number(S.meta.krwPer100); return r > 0 ? r : 900; };
+var wonf = function(n){ return Math.round(Number(n||0) * rate() / 100).toLocaleString("ko-KR") + "원"; };
+var krwf = function(n){ return Number(n||0).toLocaleString("ko-KR") + "원"; };
+function cmpHtml(it, big){
+  var kr = Number(it.krw) || 0;
+  if (!kr) return "";
+  var out = '<span class="kr">한국 ' + krwf(kr) + '</span>';
+  var yen = Number(it.yen) || 0;
+  if (yen){
+    var diff = kr - Math.round(yen * rate() / 100);
+    if (diff > 0) out += ' <span class="save">' + krwf(diff) + ' 저렴</span>';
+    else if (diff < 0) out += ' <span class="over">' + krwf(-diff) + ' 비쌈</span>';
+    else out += ' <span class="kr">동일</span>';
+  } else {
+    out += ' <span class="kr">· 엔화 미입력</span>';
+  }
+  return out;
+}
 
 function load(){
   return Promise.all([get("kv","meta"), all("stores"), all("items")]).then(function(r){
@@ -341,7 +373,8 @@ function load(){
   });
 }
 function seed(){
-  var meta = { title: TRIP.title, dates: TRIP.dates, budgetYen: TRIP.budgetYen, taxFreeMin: TRIP.taxFreeMin };
+  var meta = { title: TRIP.title, dates: TRIP.dates, budgetYen: TRIP.budgetYen,
+               taxFreeMin: TRIP.taxFreeMin, krwPer100: TRIP.krwPer100 || 900 };
   var ops = [put("kv", { k: "meta", v: meta })];
   STORES.forEach(function(s, i){
     var sid = uid("s");
@@ -349,7 +382,7 @@ function seed(){
       name: s.name||"", yomi: s.yomi||"", ko: s.ko||"", map: s.map||"" }));
     (s.items||[]).forEach(function(it, j){
       ops.push(put("items", { id: uid("i"), storeId: sid, ord: j, jp: it.jp||"", yomi: it.yomi||"",
-        ko: it.ko||"", code: it.code||"", yen: Number(it.yen)||0, pri: it.pri||"B",
+        ko: it.ko||"", code: it.code||"", yen: Number(it.yen)||0, krw: Number(it.krw)||0, pri: it.pri||"B",
         photoId: null, checked: 0 }));
     });
   });
@@ -475,6 +508,7 @@ function render(){
   var hs = document.getElementById("h-spend");
   hs.innerHTML = "<b>" + yenf(spent) + "</b>";
   if (bud) hs.innerHTML += " / " + yenf(bud);
+  hs.innerHTML += "<i>" + wonf(spent) + (bud ? " / " + wonf(bud) : "") + "</i>";
   hs.className = "hspend" + (bud && spent > bud ? " over" : "");
 }
 
@@ -509,6 +543,11 @@ function cardOf(it, s){
   var yn = document.createElement("span"); yn.className = "yen"; yn.textContent = yenf(it.yen); row.appendChild(yn);
   if (it.pri){ var p = document.createElement("span"); p.className = "pri " + it.pri; p.textContent = it.pri; row.appendChild(p); }
   body.appendChild(row);
+  var wr = document.createElement("div"); wr.className = "won";
+  wr.textContent = Number(it.yen) ? wonf(it.yen) : "엔화 미입력";
+  body.appendChild(wr);
+  var ch = cmpHtml(it);
+  if (ch){ var cd = document.createElement("div"); cd.className = "cmp"; cd.innerHTML = ch; body.appendChild(cd); }
   body.addEventListener("click", function(){ openViewer(it, s); });
 
   el.appendChild(ph); el.appendChild(body);
@@ -551,8 +590,10 @@ function openItem(it, presetStore){
   document.getElementById("f-yomi").value = it ? it.yomi : "";
   document.getElementById("f-ko").value = it ? it.ko : "";
   document.getElementById("f-yen").value = it ? (it.yen || "") : "";
+  document.getElementById("f-krw").value = it ? (it.krw || "") : "";
   document.getElementById("f-code").value = it ? it.code : "";
   setPri(it ? (it.pri || "B") : "B");
+  paintWonHint();
   paintPv(it && it.photoId ? it.photoId : null, null);
   openSheet("sheet-item");
 }
@@ -580,6 +621,11 @@ function paintPv(photoId, blob){
   }
   pv.textContent = "사진 없음"; rm.classList.add("hidden");
 }
+function paintWonHint(){
+  var v = Number(document.getElementById("f-yen").value) || 0;
+  document.getElementById("f-won").textContent = v ? "약 " + wonf(v) + " (100엔 = " + rate() + "원)" : "-";
+}
+document.getElementById("f-yen").addEventListener("input", paintWonHint);
 document.getElementById("btn-cam").addEventListener("click", function(){ document.getElementById("in-cam").click(); });
 document.getElementById("btn-lib").addEventListener("click", function(){ document.getElementById("in-lib").click(); });
 document.getElementById("btn-rmphoto").addEventListener("click", function(){
@@ -601,12 +647,13 @@ document.getElementById("item-save").addEventListener("click", function(){
   var sid = document.getElementById("f-store").value;
   if (sid === "__new"){ alert("먼저 매장을 추가하세요. 설정 > 매장 추가."); return; }
 
-  var it = edit || { id: uid("i"), ord: Date.now(), photoId: null, checked: 0 };
+  var it = edit || { id: uid("i"), ord: Date.now(), photoId: null, checked: 0, krw: 0 };
   it.storeId = sid;
   it.jp = jp;
   it.yomi = document.getElementById("f-yomi").value.trim();
   it.ko = document.getElementById("f-ko").value.trim();
   it.yen = Number(document.getElementById("f-yen").value) || 0;
+  it.krw = Number(document.getElementById("f-krw").value) || 0;
   it.code = document.getElementById("f-code").value.trim();
   it.pri = pri;
 
@@ -675,6 +722,7 @@ document.getElementById("store-del").addEventListener("click", function(){
 document.getElementById("btn-settings").addEventListener("click", function(){
   document.getElementById("g-budget").value = S.meta.budgetYen || "";
   document.getElementById("g-tax").value = S.meta.taxFreeMin || 5000;
+  document.getElementById("g-krw").value = S.meta.krwPer100 || 900;
   var last = S.meta.lastBackup;
   document.getElementById("g-exportsub").textContent = last ? "마지막 백업 " + last : "사진까지 파일 하나로";
   openSheet("sheet-set");
@@ -683,6 +731,7 @@ function saveMeta(){ return put("kv", { k: "meta", v: S.meta }); }
 document.getElementById("g-savemeta").addEventListener("click", function(){
   S.meta.budgetYen = Number(document.getElementById("g-budget").value) || 0;
   S.meta.taxFreeMin = Number(document.getElementById("g-tax").value) || 5000;
+  S.meta.krwPer100 = Number(document.getElementById("g-krw").value) || 900;
   saveMeta().then(function(){ render(); closeSheet("sheet-set"); });
 });
 document.getElementById("g-addstore").addEventListener("click", function(){ closeSheet("sheet-set"); openStore(null); });
@@ -747,7 +796,7 @@ document.getElementById("in-imp").addEventListener("change", function(e){
 
 /* ═══ viewer ═══ */
 var viewer = document.getElementById("viewer"), vstage = document.getElementById("vstage");
-var vimg = document.getElementById("vimg"), vempty = document.getElementById("vempty");
+var vimg = document.getElementById("vimg");
 var vItem = null, vStore = null, sc = 1, tx0 = 0, ty0 = 0;
 
 function apply(){ vimg.style.transform = "translate(-50%,-50%) translate(" + tx0 + "px," + ty0 + "px) scale(" + sc + ")"; }
@@ -758,11 +807,13 @@ function openViewer(it, s){
   document.getElementById("vyomi").textContent = it.yomi || "";
   document.getElementById("vko").textContent = it.ko || "";
   document.getElementById("vyen").textContent = yenf(it.yen);
+  document.getElementById("vwon").textContent = Number(it.yen) ? wonf(it.yen) : "";
+  document.getElementById("vcmp").innerHTML = cmpHtml(it, true);
   document.getElementById("vcode").textContent = it.code || "";
   document.getElementById("vstore").textContent = s ? s.name : "";
-  vimg.hidden = true; vempty.hidden = false; vimg.removeAttribute("src");
+  vimg.hidden = true; vimg.removeAttribute("src");
   if (it.photoId) photoURL(it.photoId).then(function(u){
-    if (u && vItem && vItem.id === it.id){ vimg.src = u; vimg.hidden = false; vempty.hidden = true; }
+    if (u && vItem && vItem.id === it.id){ vimg.src = u; vimg.hidden = false; }
   });
   resetZoom(); paintTick();
   viewer.classList.add("open"); document.body.style.overflow = "hidden";
@@ -783,7 +834,6 @@ var pts = {}, d0 = 0, s0 = 1, bx = 0, by = 0, lastTap = 0;
 function dist(a,b){ var dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
 function clamp(v,lo,hi){ return Math.max(lo, Math.min(hi, v)); }
 vstage.addEventListener("touchstart", function(e){
-  if (e.target.closest(".vclose")) return;
   for (var i=0;i<e.changedTouches.length;i++){ var t=e.changedTouches[i]; pts[t.identifier]={x:t.clientX,y:t.clientY}; }
   var ids = Object.keys(pts);
   if (ids.length === 2){ d0 = dist(pts[ids[0]], pts[ids[1]]); s0 = sc; bx = tx0; by = ty0; }
