@@ -11,6 +11,7 @@
    code : 品番 / JAN (없으면 "")
    yen  : 예상 가격 (숫자만, 모르면 0)
    img  : img/ 폴더 안 사진 파일명 (없으면 생략)
+   cat  : 제품군 분류 — 상단 칩이 됩니다. 아래 CATS 목록 중 하나 (비우면 "분류 없음")
    pri  : 중요도 — "A" 필수 / "B" 있으면 / "C" 눈에 띄면 (화면에는 한글로 표시)
    ───────────────────────────────────────────────────────────── */
 
@@ -21,6 +22,11 @@ const TRIP = {
   taxFreeMin: 5000,
   krwPer100: 900        // 환율: 100엔당 원화. 앱 설정에서도 바꿀 수 있습니다
 };
+
+/* 상단 칩에 쓰이는 제품군 분류. 상품이 하나라도 있는 분류만 칩으로 뜨고,
+   상품 편집 화면에서는 여기 있는 분류를 전부 고를 수 있습니다.
+   앱에서 "+ 새 분류 추가"로 언제든 늘릴 수 있습니다 */
+const CATS = ["드럭스토어", "주류", "신발", "오타쿠 굿즈", "잡화"];
 
 const STORES = [
 
@@ -36,52 +42,52 @@ const STORES = [
       { jp: "ビオレ おうちdeエステ ディープクレイ洗顔 180g",
         yomi: "비오레 오우치데에스테 디푸쿠레이 센간",
         ko: "카오 클레이 폼클렌징 180g",
-        code: "", yen: 0, img: "biore-clay.jpg", pri: "B" },
+        code: "", yen: 0, img: "biore-clay.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "アタックZERO パーフェクトスティック 16本入",
         yomi: "아탓쿠 제로 파펙토 스팃쿠",
         ko: "고농축 스틱 세탁세제 16개입 · 드럼 OK",
-        code: "", yen: 0, img: "attack-zero.jpg", pri: "B" },
+        code: "", yen: 0, img: "attack-zero.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "ツルリ 毛穴 汚れ分解ジェル 15g",
         yomi: "츠루리 케아나 요고레분카이 제루",
         ko: "BCL 효소 모공 클렌징 젤 · 명칭 현지확인",
-        code: "", yen: 0, img: "tsururi.jpg", pri: "B" },
+        code: "", yen: 0, img: "tsururi.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "メリット ドライシャンプーシート 12枚入",
         yomi: "메릿토 도라이 샴푸 시토",
         ko: "드라이샴푸 시트 12매 · 사봉&피치향",
-        code: "", yen: 0, img: "merit-dry.jpg", pri: "B" },
+        code: "", yen: 0, img: "merit-dry.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "GABAN ブラックペッパー グラウンド 100g",
         yomi: "가반 부락쿠펫파 구라운도",
         ko: "후추 분말 100g · 향신료 코너",
-        code: "", yen: 0, img: "gaban-pepper.jpg", pri: "B" },
+        code: "", yen: 0, img: "gaban-pepper.jpg", cat: "잡화", pri: "B" },
 
       { jp: "ソフィ センターイン コンパクト1/2",
         yomi: "소피 센타인 콘파쿠토 니분노이치",
         ko: "유니참 슬림 21.5·24.5cm · 무향료 있음",
-        code: "", yen: 0, img: "center-in.jpg", pri: "B" },
+        code: "", yen: 0, img: "center-in.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "クリーンデンタル トータルケア 100g",
         yomi: "쿠린덴타루 토타루케아",
         ko: "잇몸질환 예방 치약 100g · 다이이치산쿄",
-        code: "", yen: 0, img: "clean-dental.jpg", pri: "B" },
+        code: "", yen: 0, img: "clean-dental.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "Wonjungyo 薬用 モイストアップ レディスキンパック",
         yomi: "원정요 야쿠요 모이스토앗푸 레디 스킨팟쿠",
         ko: "약용 스킨팩 · 트러블 방지 타입 (초록)",
-        code: "", yen: 0, img: "wonjungyo-pack.jpg", pri: "B" },
+        code: "", yen: 0, img: "wonjungyo-pack.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "Ora2 me ステインクリアペースト ピーチリーフミント",
         yomi: "오라츠 미 스테인쿠리아 페스토 피치리후민토",
         ko: "착색·구취 예방 치약 · 불소 1450ppm",
-        code: "", yen: 0, img: "ora2-me.jpg", pri: "B" },
+        code: "", yen: 0, img: "ora2-me.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "サラサーティ コットン100 2枚重ね 72枚入",
         yomi: "사라사티 콧톤햐쿠 니마이가사네",
         ko: "팬티라이너 코튼100% 72매 (사진 없음)",
-        code: "", yen: 0, pri: "B" }
+        code: "", yen: 0, cat: "드럭스토어", pri: "B" }
     ]
   },
 
@@ -95,42 +101,42 @@ const STORES = [
       { jp: "アリナミン ナイトリカバー 快眠ユーグレナ 30粒",
         yomi: "아리나민 나이토리카바 카이민 유구레나",
         ko: "수면의 질 개선 · 기능성표시식품 10일분",
-        code: "", yen: 0, img: "arinamin-night.jpg", pri: "B" },
+        code: "", yen: 0, img: "arinamin-night.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "キヨーレオピンNEO 60mL×4",
         yomi: "키요레오핀 네오",
         ko: "와쿠나가 자양강장 · 숙성마늘추출액",
-        code: "", yen: 0, img: "kyoleopin.jpg", pri: "B" },
+        code: "", yen: 0, img: "kyoleopin.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "ブレスケア ピーチ 50粒",
         yomi: "부레스케아 피치",
         ko: "고바야시 입냄새 캡슐 50정",
-        code: "", yen: 0, img: "breath-care.jpg", pri: "B" },
+        code: "", yen: 0, img: "breath-care.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "ユンケルローヤル錠 12錠",
         yomi: "윤케루 로야루 조",
         ko: "사토제약 자양강장 정제 12정 (6회분)",
-        code: "", yen: 0, img: "yunker.jpg", pri: "B" },
+        code: "", yen: 0, img: "yunker.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "ユンケルローヤルF 50mL",
         yomi: "윤케루 로야루 에후",
         ko: "사토제약 자양강장 드링크 50mL · 생약 10종",
-        code: "", yen: 0, img: "yunker.jpg", pri: "C" },
+        code: "", yen: 0, img: "yunker.jpg", cat: "드럭스토어", pri: "C" },
 
       { jp: "ロート me+me モイスチャーティアセラム 12mL",
         yomi: "로토 메메 모이스차 티아 세라무",
         ko: "안구건조 점안액 (제3류)",
-        code: "", yen: 0, img: "meme-tear.jpg", pri: "B" },
+        code: "", yen: 0, img: "meme-tear.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "スマイル ホワイティエ n 15mL",
         yomi: "스마이루 호와이티에 엔",
         ko: "충혈·피로 점안액 · 방부제 무첨가 (제2류)",
-        code: "", yen: 0, img: "smile-whiteye.jpg", pri: "B" },
+        code: "", yen: 0, img: "smile-whiteye.jpg", cat: "드럭스토어", pri: "B" },
 
       { jp: "ロート デジアイ 12mL",
         yomi: "로토 데지아이",
         ko: "눈피로 점안액 · 돈키호테 798엔 확인",
-        code: "", yen: 798, img: "digi-eye.jpg", pri: "B" }
+        code: "", yen: 798, img: "digi-eye.jpg", cat: "드럭스토어", pri: "B" }
     ]
   },
 
@@ -143,13 +149,13 @@ const STORES = [
     items: [
       { jp: "リーメント くじポン! Hello Kitty SURPRISE MIX!",
         yomi: "리멘토 쿠지폰 하로키티 사프라이즈 믹쿠스",
-        ko: "블라인드 박스 식완", code: "", yen: 1650, pri: "A" },
+        ko: "블라인드 박스 식완", code: "", yen: 1650, cat: "오타쿠 굿즈", pri: "A" },
       { jp: "ぷちサンプルシリーズ 昭和の駄菓子屋",
         yomi: "푸치산푸루 시리즈 쇼와노 다가시야",
-        ko: "미니어처 세트, 박스 단위", code: "", yen: 4400, pri: "B" },
+        ko: "미니어처 세트, 박스 단위", code: "", yen: 4400, cat: "오타쿠 굿즈", pri: "B" },
       { jp: "ねんどろいど",
         yomi: "넨도로이도",
-        ko: "중고 매대 확인", code: "", yen: 3000, pri: "C" }
+        ko: "중고 매대 확인", code: "", yen: 3000, cat: "오타쿠 굿즈", pri: "C" }
     ]
   },
 
@@ -160,8 +166,8 @@ const STORES = [
     ko: "신품 재고 많음. 예약상품 취급",
     map: "",
     items: [
-      { jp: "figma", yomi: "피구마", ko: "가동 피규어", code: "", yen: 7800, pri: "B" },
-      { jp: "アクリルスタンド", yomi: "아쿠리루 스탄도", ko: "아크릴 스탠드", code: "", yen: 1200, pri: "C" }
+      { jp: "figma", yomi: "피구마", ko: "가동 피규어", code: "", yen: 7800, cat: "오타쿠 굿즈", pri: "B" },
+      { jp: "アクリルスタンド", yomi: "아쿠리루 스탄도", ko: "아크릴 스탠드", code: "", yen: 1200, cat: "오타쿠 굿즈", pri: "C" }
     ]
   },
 
@@ -177,7 +183,7 @@ const STORES = [
       { jp: "立つしゃもじ",
         yomi: "타츠 샤모지",
         ko: "세워지는 밥주걱 · 밥알 안 붙음 (사진 없음)",
-        code: "", yen: 0, pri: "B" }
+        code: "", yen: 0, cat: "잡화", pri: "B" }
     ]
   },
 
@@ -188,8 +194,8 @@ const STORES = [
     ko: "6층 호비관. 면세 카운터 별도",
     map: "",
     items: [
-      { jp: "ナノブロック", yomi: "나노부록쿠", ko: "나노블록", code: "", yen: 2200, pri: "B" },
-      { jp: "食玩", yomi: "쇼쿠간", ko: "식완 코너 신상 확인", code: "", yen: 3000, pri: "A" }
+      { jp: "ナノブロック", yomi: "나노부록쿠", ko: "나노블록", code: "", yen: 2200, cat: "오타쿠 굿즈", pri: "B" },
+      { jp: "食玩", yomi: "쇼쿠간", ko: "식완 코너 신상 확인", code: "", yen: 3000, cat: "오타쿠 굿즈", pri: "A" }
     ]
   },
 
@@ -200,7 +206,7 @@ const STORES = [
     ko: "산리오·캐릭터 굿즈",
     map: "",
     items: [
-      { jp: "サンリオ ぬいぐるみ", yomi: "산리오 누이구루미", ko: "산리오 인형", code: "", yen: 3300, pri: "B" }
+      { jp: "サンリオ ぬいぐるみ", yomi: "산리오 누이구루미", ko: "산리오 인형", code: "", yen: 3300, cat: "오타쿠 굿즈", pri: "B" }
     ]
   }
 ];

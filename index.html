@@ -48,21 +48,15 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .fsep{flex:0 0 auto;width:1px;align-self:stretch;background:var(--rule);margin:2px 5px}
 
 .store{margin:18px 0 0}
-.shead{display:flex;align-items:flex-start;gap:9px;padding:0 2px 6px}
-.sname{font-size:16.5px;font-weight:700;letter-spacing:-.01em;margin:0;line-height:1.25}
-.syomi{font-size:12.5px;color:var(--indigo);margin-top:2px;font-weight:600}
-.smeta{font-size:12px;color:var(--ink-2);margin-top:2px}
+.shead{display:flex;align-items:flex-start;gap:9px;padding:0 2px 10px}
+/* 매장 헤더는 한글 이름만 — 일본어 정식명칭은 매장 편집 안에만 있습니다 */
+.sname{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:0;line-height:1.25}
+.smeta{font-size:12px;color:var(--ink-2);margin-top:3px}
 .sright{margin-left:auto;display:flex;gap:7px;align-items:center;flex:0 0 auto}
 .daypin{font-size:11.5px;font-weight:700;color:var(--indigo);border:1.5px solid var(--indigo);
   border-radius:4px;padding:1px 6px}
 .iconbtn{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--rule);
   border-radius:9px;background:var(--card);color:var(--indigo);text-decoration:none;cursor:pointer;padding:0}
-.gauge{display:flex;align-items:center;gap:8px;padding:0 2px 10px;font-size:12px;color:var(--ink-2)}
-.gtrack{flex:1;height:5px;background:#D7DBD7;border-radius:3px;overflow:hidden}
-.gfill{height:100%;width:0;background:var(--indigo);border-radius:3px;transition:width .25s ease}
-.gauge.hit .gfill{background:var(--moss)}
-.gauge.hit .gtxt{color:var(--moss);font-weight:700}
-.gtxt{flex:0 0 auto;font-variant-numeric:tabular-nums}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(min-width:560px){.grid{grid-template-columns:1fr 1fr 1fr}}
@@ -83,15 +77,14 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .card.on .mark i{border-color:#fff;background:#fff no-repeat center/14px
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322406B' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")}
 .cbody{padding:9px 10px 11px;text-align:left;background:none;border:0;cursor:pointer;flex:1;width:100%}
-/* 카드 아래 텍스트는 네 줄 고정 — 이름 2줄 / 발음 1줄 / 설명 1줄 / 가격+중요도 1줄.
-   잘린 부분은 카드를 눌러 상세 화면에서 전부 봅니다 */
-.jp{font-size:14px;font-weight:650;line-height:1.32;letter-spacing:-.01em;word-break:break-word;
+/* 카드는 한글만 — 발음 2줄 / 설명 2줄 / 가격+중요도 1줄.
+   일본어 정식명칭은 점원에게 보여줄 때 쓰므로 상세 화면에만 둡니다 */
+.yomi{font-size:14.5px;font-weight:650;color:var(--ink);line-height:1.32;letter-spacing:-.01em;
+  word-break:break-word;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card.on .jp{text-decoration:line-through}
-.yomi{font-size:12.5px;color:var(--indigo);font-weight:600;margin-top:3px;line-height:1.3;
-  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
-.ko{font-size:11.5px;color:var(--ink-3);margin-top:2px;line-height:1.3;
-  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.card.on .yomi{text-decoration:line-through}
+.ko{font-size:11.5px;color:var(--ink-3);margin-top:3px;line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* 가격 한 줄 — 엔화 · 환산 원화 · 중요도 배지 */
 .crow{display:flex;align-items:center;gap:4px;margin-top:8px;min-width:0}
 .yen{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
@@ -135,7 +128,11 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 .prirow{display:flex;gap:6px}
 .prirow button{flex:1;border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
   border-radius:9px;padding:10px 0;font-size:14px;cursor:pointer}
-.prirow button[aria-pressed="true"]{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:700}
+/* 고른 중요도는 카드 배지와 같은 색으로 채워집니다 */
+.prirow button[aria-pressed="true"]{color:#fff;font-weight:700}
+.prirow button[data-p="A"][aria-pressed="true"]{background:var(--vermilion);border-color:var(--vermilion)}
+.prirow button[data-p="B"][aria-pressed="true"]{background:var(--indigo);border-color:var(--indigo)}
+.prirow button[data-p="C"][aria-pressed="true"]{background:var(--ink-2);border-color:var(--ink-2)}
 .picker{display:flex;gap:10px;margin-bottom:14px}
 .pv{width:104px;height:104px;border-radius:10px;background:var(--shade);overflow:hidden;flex:0 0 auto;
   display:grid;place-items:center;color:var(--ink-3);font-size:12px;text-align:center;padding:6px}
@@ -157,7 +154,8 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 .viewer{position:fixed;inset:0;z-index:50;background:#0D0F11;display:none;flex-direction:column}
 .viewer.open{display:flex}
 .vstage{flex:1 1 auto;position:relative;overflow:hidden;touch-action:none}
-.vstage img{position:absolute;top:50%;left:50%;max-width:100%;max-height:100%;transform-origin:0 0;
+/* 확대 기준점은 사진 한가운데 — 손가락이 짚은 자리를 따라가도록 JS에서 위치를 잡습니다 */
+.vstage img{position:absolute;top:50%;left:50%;max-width:100%;max-height:100%;transform-origin:50% 50%;
   will-change:transform;user-select:none;-webkit-user-drag:none}
 .vcard{background:var(--card);padding:15px 16px calc(15px + env(safe-area-inset-bottom));border-top:1px solid var(--rule);
   max-height:56vh;overflow-y:auto}
@@ -175,6 +173,7 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 .vyen.none{font-size:15px;font-weight:600;color:var(--ink-3)}
 .vwon{font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .vcode{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.vcat{font-size:12px;color:var(--ink-2);background:var(--shade);border-radius:5px;padding:2px 8px}
 .vstore{font-size:12.5px;color:var(--indigo);font-weight:600;margin-left:auto;text-align:right}
 /* 상세 화면 버튼 3개 — 폭·높이·글자 크기 동일. 색으로만 역할을 구분합니다 */
 .vbtns{display:flex;gap:8px;margin-top:13px}
@@ -237,9 +236,14 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
       <input type="file" id="in-cam" accept="image/*" capture="environment" class="hidden">
       <input type="file" id="in-lib" accept="image/*" class="hidden">
 
-      <label class="f"><span>매장</span>
-        <select class="in" id="f-store"></select>
-      </label>
+      <div class="two">
+        <label class="f"><span>분류</span>
+          <select class="in" id="f-cat"></select>
+        </label>
+        <label class="f"><span>매장</span>
+          <select class="in" id="f-store"></select>
+        </label>
+      </div>
       <label class="f"><span>일본어 정식명칭</span>
         <input class="in" id="f-jp" placeholder="リーメント ぷちサンプル">
       </label>
@@ -283,7 +287,7 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
       <label class="f"><span>매장명 (일본어)</span><input class="in" id="s-name" placeholder="駿河屋 大阪日本橋店"></label>
       <label class="f"><span>한글 발음</span><input class="in" id="s-yomi" placeholder="스루가야 오사카 니혼바시텐"></label>
       <div class="two">
-        <label class="f"><span>구역</span><input class="in" id="s-area" placeholder="덴덴타운"></label>
+        <label class="f"><span>지역</span><input class="in" id="s-area" placeholder="난바"></label>
         <label class="f"><span>며칠차</span><input class="in" id="s-day" type="number" inputmode="numeric" placeholder="1"></label>
       </div>
       <label class="f"><span>메모</span><input class="in" id="s-ko" placeholder="지하 식완 코너 먼저"></label>
@@ -303,9 +307,8 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
     <div class="sbody">
       <div class="two">
         <label class="f"><span>전체 예산 (엔)</span><input class="in" id="g-budget" type="number" inputmode="numeric"></label>
-        <label class="f"><span>면세 기준 (엔)</span><input class="in" id="g-tax" type="number" inputmode="numeric"></label>
+        <label class="f"><span>환율 — 100엔당 원화</span><input class="in" id="g-krw" type="number" inputmode="numeric"></label>
       </div>
-      <label class="f"><span>환율 — 100엔당 원화</span><input class="in" id="g-krw" type="number" inputmode="numeric"></label>
       <button class="rowbtn c" id="g-savemeta">예산·환율 저장</button>
       <button class="rowbtn c" id="g-addstore">매장 추가</button>
       <div class="hr"></div>
@@ -336,6 +339,7 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
       <span class="vyen" id="vyen"></span>
       <span class="vwon" id="vwon"></span>
       <span class="vcode" id="vcode"></span>
+      <span class="vcat" id="vcat" hidden></span>
       <span class="vstore" id="vstore"></span>
     </div>
     <div class="vbtns">
@@ -400,7 +404,7 @@ function load(){
 }
 function seed(){
   var meta = { title: TRIP.title, dates: TRIP.dates, budgetYen: TRIP.budgetYen,
-               taxFreeMin: TRIP.taxFreeMin, krwPer100: TRIP.krwPer100 || 900 };
+               krwPer100: TRIP.krwPer100 || 900 };
   var ops = [put("kv", { k: "meta", v: meta })];
   STORES.forEach(function(s, i){
     var sid = uid("s");
@@ -408,7 +412,7 @@ function seed(){
       name: s.name||"", yomi: s.yomi||"", ko: s.ko||"", map: s.map||"" }));
     (s.items||[]).forEach(function(it, j){
       var rec = { id: uid("i"), storeId: sid, ord: j, jp: it.jp||"", yomi: it.yomi||"",
-        ko: it.ko||"", code: it.code||"", yen: Number(it.yen)||0, pri: it.pri||"B",
+        ko: it.ko||"", code: it.code||"", yen: Number(it.yen)||0, pri: it.pri||"B", cat: it.cat||"",
         photoId: null, checked: 0 };
       if (!it.img){ ops.push(put("items", rec)); return; }
       /* img/ 폴더 사진을 받아 폰 안에 blob으로 저장 — 실패해도 항목은 남습니다 */
@@ -457,17 +461,41 @@ function shrink(file){
   });
 }
 
-/* ═══ filters ═══ */
-var fArea = "ALL", fLeft = false;
+/* ═══ filters — 상단 칩은 제품군 분류입니다 ═══ */
+var fCat = "ALL", fLeft = false;
 var filters = document.getElementById("filters");
+
+/* 지금 목록에 실제로 쓰이고 있는 분류만 칩으로 띄웁니다.
+   data.js의 CATS 순서를 먼저 따르고, 없는 분류는 뒤에 붙입니다 */
+function usedCats(){
+  var base = (typeof CATS !== "undefined" && CATS.length) ? CATS.slice() : [];
+  var have = [];
+  S.items.forEach(function(i){ if (i.cat && have.indexOf(i.cat) < 0) have.push(i.cat); });
+  var out = [];
+  base.forEach(function(c){ if (have.indexOf(c) >= 0) out.push(c); });
+  have.forEach(function(c){ if (out.indexOf(c) < 0) out.push(c); });
+  return out;
+}
+/* 편집 화면에서 고를 수 있는 전체 분류 — 아직 상품이 없는 분류도 포함 */
+function allCats(){
+  var out = (typeof CATS !== "undefined" && CATS.length) ? CATS.slice() : [];
+  S.items.forEach(function(i){ if (i.cat && out.indexOf(i.cat) < 0) out.push(i.cat); });
+  return out;
+}
 function buildFilters(){
-  var areas = [];
-  S.stores.forEach(function(s){ if (s.area && areas.indexOf(s.area) < 0) areas.push(s.area); });
   filters.innerHTML = "";
   mkChip("남은 것만", fLeft, function(){ fLeft = !fLeft; buildFilters(); render(); }, "tog");
   var sep = document.createElement("span"); sep.className = "fsep"; filters.appendChild(sep);
-  mkChip("전체", fArea === "ALL", function(){ fArea = "ALL"; buildFilters(); render(); });
-  areas.forEach(function(a){ mkChip(a, fArea === a, function(){ fArea = a; buildFilters(); render(); }); });
+  mkChip("전체", fCat === "ALL", function(){ fCat = "ALL"; buildFilters(); render(); });
+  usedCats().forEach(function(c){ mkChip(c, fCat === c, function(){ fCat = c; buildFilters(); render(); }); });
+  if (S.items.some(function(i){ return !i.cat; })){
+    mkChip("분류 없음", fCat === "__none", function(){ fCat = "__none"; buildFilters(); render(); });
+  }
+}
+function catOK(i){
+  if (fCat === "ALL") return true;
+  if (fCat === "__none") return !i.cat;
+  return i.cat === fCat;
 }
 function mkChip(label, on, fn, cls){
   var b = document.createElement("button");
@@ -484,23 +512,22 @@ function render(){
   var shown = 0;
 
   S.stores.forEach(function(s){
-    if (fArea !== "ALL" && s.area !== fArea) return;
-    var mine = S.items.filter(function(i){ return i.storeId === s.id; });
+    /* 분류는 상품마다 붙어 있으므로 매장이 아니라 상품을 걸러냅니다 */
+    var mine = S.items.filter(function(i){ return i.storeId === s.id && catOK(i); });
     var vis = fLeft ? mine.filter(function(i){ return !i.checked; }) : mine;
     if (!vis.length) return;
     shown += vis.length;
 
     var doneN = mine.filter(function(i){ return i.checked; }).length;
-    var sum = mine.reduce(function(a,i){ return a + (i.checked ? Number(i.yen||0) : 0); }, 0);
 
     var sec = document.createElement("section"); sec.className = "store";
 
     var head = document.createElement("div"); head.className = "shead";
     var t = document.createElement("div"); t.style.minWidth = "0";
-    var h = document.createElement("h2"); h.className = "sname"; h.textContent = s.name; t.appendChild(h);
-    if (s.yomi){ var y = document.createElement("div"); y.className = "syomi"; y.textContent = s.yomi; t.appendChild(y); }
+    var h = document.createElement("h2"); h.className = "sname";
+    h.textContent = s.yomi || s.name; t.appendChild(h);
     var m = document.createElement("div"); m.className = "smeta";
-    m.textContent = (s.ko ? s.ko + "  ·  " : "") + doneN + "/" + mine.length;
+    m.textContent = (s.area ? s.area + "  ·  " : "") + (s.ko ? s.ko + "  ·  " : "") + doneN + "/" + mine.length;
     t.appendChild(m);
     head.appendChild(t);
 
@@ -520,14 +547,6 @@ function render(){
     head.appendChild(right);
     sec.appendChild(head);
 
-    var min = Number(S.meta.taxFreeMin) || 5000;
-    var hit = sum >= min;
-    var g = document.createElement("div"); g.className = "gauge" + (hit ? " hit" : "");
-    g.innerHTML = '<div class="gtrack"><div class="gfill"></div></div><span class="gtxt"></span>';
-    g.querySelector(".gfill").style.width = Math.min(100, Math.round(sum / min * 100)) + "%";
-    g.querySelector(".gtxt").textContent = hit ? "면세 가능 " + yenf(sum) : yenf(sum) + " / 면세 " + yenf(min);
-    sec.appendChild(g);
-
     var grid = document.createElement("div"); grid.className = "grid";
     vis.forEach(function(it){ grid.appendChild(cardOf(it, s)); });
     sec.appendChild(grid);
@@ -536,7 +555,7 @@ function render(){
 
   if (!shown){
     var e = document.createElement("div"); e.className = "empty";
-    e.textContent = S.items.length ? (fLeft ? "이 구역은 다 샀습니다." : "표시할 항목이 없습니다.")
+    e.textContent = S.items.length ? (fLeft ? "여기는 다 샀습니다." : "이 분류에 표시할 항목이 없습니다.")
                                    : "상품 추가를 눌러 목록을 만드세요.";
     main.appendChild(e);
   }
@@ -557,7 +576,7 @@ function cardOf(it, s){
   var ph = document.createElement("button");
   ph.className = "photo"; ph.type = "button"; ph.setAttribute("aria-label", "사진 크게 보기");
   var span = document.createElement("span"); span.className = "ph";
-  span.textContent = (it.jp || "?").trim().charAt(0);
+  span.textContent = (it.yomi || it.jp || "?").trim().charAt(0);
   ph.appendChild(span);
   if (it.photoId) photoURL(it.photoId).then(function(u){
     if (!u) return;
@@ -574,8 +593,9 @@ function cardOf(it, s){
   ph.appendChild(mk);
 
   var body = document.createElement("button"); body.className = "cbody"; body.type = "button";
-  var jp = document.createElement("div"); jp.className = "jp"; jp.textContent = it.jp; body.appendChild(jp);
-  if (it.yomi){ var yo = document.createElement("div"); yo.className = "yomi"; yo.textContent = it.yomi; body.appendChild(yo); }
+  /* 카드에는 한글 발음이 제목입니다. 일본어 정식명칭은 상세 화면에 있습니다 */
+  var nm = document.createElement("div"); nm.className = "yomi";
+  nm.textContent = it.yomi || it.jp; body.appendChild(nm);
   if (it.ko){ var ko = document.createElement("div"); ko.className = "ko"; ko.textContent = it.ko; body.appendChild(ko); }
   /* 가격 한 줄: 엔화 · 환산 원화 · 중요도 */
   var row = document.createElement("div"); row.className = "crow";
@@ -616,6 +636,27 @@ Array.prototype.forEach.call(document.querySelectorAll(".sheet"), function(sh){
 var edit = null, pendingBlob = null, pendingClear = false, pri = "B";
 var pv = document.getElementById("pv");
 
+/* 분류 목록 — 쓰이고 있는 분류 + data.js의 CATS. 맨 아래에서 새로 만들 수 있습니다 */
+var catPrev = "";
+function fillCats(cur){
+  var cs = document.getElementById("f-cat");
+  var list = allCats();
+  cur = cur || "";
+  if (cur && list.indexOf(cur) < 0) list.push(cur);
+  cs.innerHTML = "";
+  var o0 = document.createElement("option"); o0.value = ""; o0.textContent = "분류 없음"; cs.appendChild(o0);
+  list.forEach(function(c){
+    var o = document.createElement("option"); o.value = c; o.textContent = c; cs.appendChild(o);
+  });
+  var on = document.createElement("option"); on.value = "__new"; on.textContent = "+ 새 분류 추가"; cs.appendChild(on);
+  cs.value = cur; catPrev = cur;
+}
+document.getElementById("f-cat").addEventListener("change", function(){
+  if (this.value !== "__new"){ catPrev = this.value; return; }
+  var v = (prompt("새 분류 이름 (예: 주류, 신발)") || "").trim();
+  fillCats(v || catPrev);
+});
+
 function openItem(it, presetStore){
   edit = it || null; pendingBlob = null; pendingClear = false;
   document.getElementById("item-title").textContent = it ? "상품 편집" : "상품 추가";
@@ -624,11 +665,15 @@ function openItem(it, presetStore){
   var sel = document.getElementById("f-store");
   sel.innerHTML = "";
   S.stores.forEach(function(s){
-    var o = document.createElement("option"); o.value = s.id; o.textContent = s.name; sel.appendChild(o);
+    /* 목록에서 고를 때는 한글로 — 지역 · 한글 이름 */
+    var o = document.createElement("option"); o.value = s.id;
+    o.textContent = (s.area ? s.area + " · " : "") + (s.yomi || s.name);
+    sel.appendChild(o);
   });
   var o2 = document.createElement("option"); o2.value = "__new"; o2.textContent = "+ 새 매장 추가"; sel.appendChild(o2);
   sel.value = it ? it.storeId : (presetStore || (S.stores[0] && S.stores[0].id) || "__new");
 
+  fillCats(it ? (it.cat || "") : "");
   document.getElementById("f-jp").value = it ? it.jp : "";
   document.getElementById("f-yomi").value = it ? it.yomi : "";
   document.getElementById("f-ko").value = it ? it.ko : "";
@@ -696,6 +741,8 @@ document.getElementById("item-save").addEventListener("click", function(){
   it.ko = document.getElementById("f-ko").value.trim();
   it.yen = Number(document.getElementById("f-yen").value) || 0;
   it.code = document.getElementById("f-code").value.trim();
+  var cv = document.getElementById("f-cat").value;
+  it.cat = (cv === "__new") ? (edit ? (edit.cat || "") : "") : cv;
   if ("krw" in it) delete it.krw;   /* 예전 백업에서 넘어온 한국가 필드 정리 */
   it.pri = pri;
 
@@ -763,7 +810,6 @@ document.getElementById("store-del").addEventListener("click", function(){
 /* ── settings ── */
 document.getElementById("btn-settings").addEventListener("click", function(){
   document.getElementById("g-budget").value = S.meta.budgetYen || "";
-  document.getElementById("g-tax").value = S.meta.taxFreeMin || 5000;
   document.getElementById("g-krw").value = S.meta.krwPer100 || 900;
   var last = S.meta.lastBackup;
   document.getElementById("g-exportsub").textContent = last
@@ -774,7 +820,6 @@ document.getElementById("btn-settings").addEventListener("click", function(){
 function saveMeta(){ return put("kv", { k: "meta", v: S.meta }); }
 document.getElementById("g-savemeta").addEventListener("click", function(){
   S.meta.budgetYen = Number(document.getElementById("g-budget").value) || 0;
-  S.meta.taxFreeMin = Number(document.getElementById("g-tax").value) || 5000;
   S.meta.krwPer100 = Number(document.getElementById("g-krw").value) || 900;
   saveMeta().then(function(){ render(); closeSheet("sheet-set"); });
 });
@@ -843,8 +888,32 @@ var viewer = document.getElementById("viewer"), vstage = document.getElementById
 var vimg = document.getElementById("vimg");
 var vItem = null, vStore = null, sc = 1, tx0 = 0, ty0 = 0;
 
-function apply(){ vimg.style.transform = "translate(-50%,-50%) translate(" + tx0 + "px," + ty0 + "px) scale(" + sc + ")"; }
+/* 사진이 화면보다 커진 만큼만 움직일 수 있게 — 화면보다 작으면 가운데 고정 */
+function limits(){
+  var sw = vstage.clientWidth, sh = vstage.clientHeight;
+  var iw = vimg.offsetWidth * sc, ih = vimg.offsetHeight * sc;
+  return { x: Math.max(0, (iw - sw) / 2), y: Math.max(0, (ih - sh) / 2) };
+}
+function apply(){
+  var L = limits();
+  tx0 = clamp(tx0, -L.x, L.x);
+  ty0 = clamp(ty0, -L.y, L.y);
+  vimg.style.transform = "translate(-50%,-50%) translate(" + tx0 + "px," + ty0 + "px) scale(" + sc + ")";
+}
 function resetZoom(){ sc = 1; tx0 = 0; ty0 = 0; apply(); }
+/* 화면 좌표를 사진 중심 기준 좌표로 */
+function stagePt(x, y){
+  var r = vstage.getBoundingClientRect();
+  return { x: x - r.left - r.width / 2, y: y - r.top - r.height / 2 };
+}
+/* 짚은 지점은 그 자리에 두고 배율만 바꿉니다 */
+function zoomAt(p, ns){
+  ns = clamp(ns, 1, 6);
+  var ux = (p.x - tx0) / sc, uy = (p.y - ty0) / sc;
+  sc = ns;
+  tx0 = p.x - ux * sc; ty0 = p.y - uy * sc;
+  apply();
+}
 function openViewer(it, s){
   vItem = it; vStore = s;
   document.getElementById("vjp").textContent = it.jp;
@@ -857,6 +926,7 @@ function openViewer(it, s){
   vy.textContent = has ? yenf(it.yen) : "가격 미정 — 편집에서 입력";
   document.getElementById("vwon").textContent = has ? wonf(it.yen) : "";
   document.getElementById("vcode").textContent = it.code || "";
+  var vc = document.getElementById("vcat"); vc.textContent = it.cat || ""; vc.hidden = !it.cat;
   document.getElementById("vstore").textContent = s ? s.name : "";
   vimg.hidden = true; vimg.removeAttribute("src");
   if (it.photoId) photoURL(it.photoId).then(function(u){
@@ -877,41 +947,72 @@ document.getElementById("vedit").addEventListener("click", function(){ var i = v
 document.getElementById("vclose").addEventListener("click", closeViewer);
 document.addEventListener("keydown", function(e){ if (e.key === "Escape"){ closeViewer(); } });
 
-var pts = {}, d0 = 0, s0 = 1, bx = 0, by = 0, lastTap = 0;
+var pts = {}, d0 = 0, s0 = 1, u0 = null, bx = 0, by = 0, lastTap = 0;
 function dist(a,b){ var dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
 function clamp(v,lo,hi){ return Math.max(lo, Math.min(hi, v)); }
+function mid2(a,b){ return stagePt((a.x+b.x)/2, (a.y+b.y)/2); }
+
 vstage.addEventListener("touchstart", function(e){
   for (var i=0;i<e.changedTouches.length;i++){ var t=e.changedTouches[i]; pts[t.identifier]={x:t.clientX,y:t.clientY}; }
   var ids = Object.keys(pts);
-  if (ids.length === 2){ d0 = dist(pts[ids[0]], pts[ids[1]]); s0 = sc; bx = tx0; by = ty0; }
-  else if (ids.length === 1){
+  if (ids.length >= 2){
+    var a = pts[ids[0]], b = pts[ids[1]];
+    d0 = dist(a, b); s0 = sc;
+    /* 두 손가락 한가운데가 짚고 있는 사진 속 위치를 기억해 둡니다 */
+    var m = mid2(a, b);
+    u0 = { x: (m.x - tx0) / sc, y: (m.y - ty0) / sc };
+  } else if (ids.length === 1){
     bx = tx0; by = ty0;
     var now = Date.now();
-    if (now - lastTap < 300){ if (sc > 1.05) resetZoom(); else { sc = 2.5; apply(); } lastTap = 0; }
-    else lastTap = now;
+    if (now - lastTap < 300){
+      /* 두 번 탭 — 누른 지점을 중심으로 확대 */
+      if (sc > 1.05) resetZoom();
+      else zoomAt(stagePt(pts[ids[0]].x, pts[ids[0]].y), 2.5);
+      lastTap = 0;
+    } else lastTap = now;
   }
 }, { passive: true });
+
 vstage.addEventListener("touchmove", function(e){
   var ids = Object.keys(pts); if (!ids.length) return;
   e.preventDefault();
   var mv = {};
   for (var i=0;i<e.touches.length;i++){ var t=e.touches[i]; if (pts[t.identifier]) mv[t.identifier]={x:t.clientX,y:t.clientY}; }
   var m = Object.keys(mv);
-  if (m.length === 2 && d0){
-    sc = clamp(s0 * (dist(mv[m[0]], mv[m[1]]) / d0), 1, 6);
-    if (sc <= 1.01){ tx0 = 0; ty0 = 0; }
+  if (m.length >= 2 && d0 && u0){
+    var a = mv[m[0]], b = mv[m[1]];
+    sc = clamp(s0 * (dist(a, b) / d0), 1, 6);
+    /* 손가락 한가운데가 계속 같은 자리를 짚도록 위치를 따라 옮깁니다 (확대하며 이동도 됨) */
+    var c = mid2(a, b);
+    tx0 = c.x - u0.x * sc; ty0 = c.y - u0.y * sc;
+    if (sc <= 1.01){ sc = 1; tx0 = 0; ty0 = 0; }
     apply();
   } else if (m.length === 1 && sc > 1.01){
     tx0 = bx + (mv[m[0]].x - pts[m[0]].x); ty0 = by + (mv[m[0]].y - pts[m[0]].y); apply();
   }
 }, { passive: false });
+
 function endT(e){
   for (var i=0;i<e.changedTouches.length;i++) delete pts[e.changedTouches[i].identifier];
-  if (!Object.keys(pts).length){ d0 = 0; bx = tx0; by = ty0; }
+  d0 = 0; u0 = null;
+  /* 손가락 하나를 떼면 남은 손가락 기준점을 지금 위치로 다시 잡아 화면이 튀지 않게 합니다 */
+  for (var j=0;j<e.touches.length;j++){
+    var t = e.touches[j];
+    if (pts[t.identifier]) pts[t.identifier] = { x: t.clientX, y: t.clientY };
+  }
+  bx = tx0; by = ty0;
 }
 vstage.addEventListener("touchend", endT, { passive: true });
 vstage.addEventListener("touchcancel", endT, { passive: true });
-vstage.addEventListener("dblclick", function(){ if (sc > 1.05) resetZoom(); else { sc = 2.5; apply(); } });
+vstage.addEventListener("dblclick", function(e){
+  if (sc > 1.05) resetZoom(); else zoomAt(stagePt(e.clientX, e.clientY), 2.5);
+});
+/* 마우스 휠 / 트랙패드 확대도 커서 위치를 기준으로 */
+vstage.addEventListener("wheel", function(e){
+  if (!viewer.classList.contains("open")) return;
+  e.preventDefault();
+  zoomAt(stagePt(e.clientX, e.clientY), sc * (e.deltaY < 0 ? 1.15 : 1 / 1.15));
+}, { passive: false });
 
 /* ═══ boot ═══ */
 open().then(load).then(function(){
