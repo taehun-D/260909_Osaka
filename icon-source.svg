@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- 오사카 쇼핑 앱 아이콘 — 직접 그린 오리지널 고양이 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2C4F80"/>
+      <stop offset="1" stop-color="#1D3A62"/>
+    </linearGradient>
+    <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F2F4F7"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#bg)"/>
+
+  <!-- 고양이 전체 — 살짝 키우고 위로 올려 가운데를 맞춥니다 -->
+  <g transform="translate(256 246) scale(1.06) translate(-256 -256)">
+
+  <!-- 귀 -->
+  <g stroke="#1D3A62" stroke-width="14" stroke-linejoin="round">
+    <path d="M148 214 L124 104 L226 158 Z" fill="url(#fur)"/>
+    <path d="M364 214 L388 104 L286 158 Z" fill="url(#fur)"/>
+  </g>
+  <path d="M156 198 L142 137 L200 168 Z" fill="#F0A9A3"/>
+  <path d="M356 198 L370 137 L312 168 Z" fill="#F0A9A3"/>
+
+  <!-- 얼굴 -->
+  <ellipse cx="256" cy="292" rx="152" ry="136" fill="url(#fur)" stroke="#1D3A62" stroke-width="14"/>
+
+  <!-- 볼터치 -->
+  <ellipse cx="160" cy="330" rx="27" ry="17" fill="#F7B3AC" opacity=".9"/>
+  <ellipse cx="352" cy="330" rx="27" ry="17" fill="#F7B3AC" opacity=".9"/>
+
+  <!-- 눈 -->
+  <g fill="#16191C">
+    <ellipse cx="206" cy="284" rx="21" ry="26"/>
+    <ellipse cx="306" cy="284" rx="21" ry="26"/>
+  </g>
+  <circle cx="213" cy="274" r="7.5" fill="#FFFFFF"/>
+  <circle cx="313" cy="274" r="7.5" fill="#FFFFFF"/>
+
+  <!-- 코와 입 -->
+  <path d="M245 322 L267 322 Q272 322 269 327 L259 340 Q256 344 253 340 L243 327 Q240 322 245 322 Z" fill="#C8322E"/>
+  <path d="M256 344 Q256 360 240 360 M256 344 Q256 360 272 360"
+        fill="none" stroke="#16191C" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- 수염 -->
+  <g stroke="#AFBDD0" stroke-width="8" stroke-linecap="round" fill="none">
+    <path d="M118 286 L64 272"/>
+    <path d="M116 314 L60 318"/>
+    <path d="M394 286 L448 272"/>
+    <path d="M396 314 L452 318"/>
+  </g>
+  </g>
+</svg>
