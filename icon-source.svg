@@ -1,55 +1,78 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- 오사카 쇼핑 앱 아이콘 — 직접 그린 오리지널 고양이 -->
+  <!-- 오사카 쇼핑 앱 아이콘 — 직접 그린 오리지널 고양이
+       귀엽게 보이는 요소: 큰 머리, 작고 둥근 귀, 아래쪽에 크게 벌어진 눈,
+       하이라이트 두 개, 넓은 볼터치, 아주 작은 코와 입 -->
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2C4F80"/>
-      <stop offset="1" stop-color="#1D3A62"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#345A8E"/>
+      <stop offset="1" stop-color="#1E3B64"/>
     </linearGradient>
     <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#F2F4F7"/>
+      <stop offset="1" stop-color="#EFF2F6"/>
     </linearGradient>
+    <radialGradient id="blush">
+      <stop offset="0" stop-color="#F79A92" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#F79A92" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 반짝임 -->
+    <g id="spark">
+      <path d="M0-1Q.14-.14 1 0 .14.14 0 1-.14.14-1 0-.14-.14 0-1Z"/>
+    </g>
   </defs>
 
   <rect width="512" height="512" fill="url(#bg)"/>
 
-  <!-- 고양이 전체 — 살짝 키우고 위로 올려 가운데를 맞춥니다 -->
-  <g transform="translate(256 246) scale(1.06) translate(-256 -256)">
-
-  <!-- 귀 -->
-  <g stroke="#1D3A62" stroke-width="14" stroke-linejoin="round">
-    <path d="M148 214 L124 104 L226 158 Z" fill="url(#fur)"/>
-    <path d="M364 214 L388 104 L286 158 Z" fill="url(#fur)"/>
+  <!-- 배경 반짝임 -->
+  <g fill="#FFFFFF" opacity=".22">
+    <use href="#spark" transform="translate(84 132) scale(21)"/>
+    <use href="#spark" transform="translate(432 178) scale(15)"/>
+    <use href="#spark" transform="translate(414 408) scale(12)"/>
+    <use href="#spark" transform="translate(74 396) scale(9)"/>
   </g>
-  <path d="M156 198 L142 137 L200 168 Z" fill="#F0A9A3"/>
-  <path d="M356 198 L370 137 L312 168 Z" fill="#F0A9A3"/>
 
-  <!-- 얼굴 -->
-  <ellipse cx="256" cy="292" rx="152" ry="136" fill="url(#fur)" stroke="#1D3A62" stroke-width="14"/>
+  <g transform="translate(256 252) scale(1.04) translate(-256 -256)">
 
-  <!-- 볼터치 -->
-  <ellipse cx="160" cy="330" rx="27" ry="17" fill="#F7B3AC" opacity=".9"/>
-  <ellipse cx="352" cy="330" rx="27" ry="17" fill="#F7B3AC" opacity=".9"/>
+    <!-- 귀 — 작고 둥글게 -->
+    <g stroke="#1E3B64" stroke-width="17" stroke-linejoin="round">
+      <path d="M150 232 L138 142 L226 184 Z" fill="url(#fur)"/>
+      <path d="M362 232 L374 142 L286 184 Z" fill="url(#fur)"/>
+    </g>
+    <path d="M160 214 L152 168 L198 190 Z" fill="#F3ABA4"/>
+    <path d="M352 214 L360 168 L314 190 Z" fill="#F3ABA4"/>
 
-  <!-- 눈 -->
-  <g fill="#16191C">
-    <ellipse cx="206" cy="284" rx="21" ry="26"/>
-    <ellipse cx="306" cy="284" rx="21" ry="26"/>
-  </g>
-  <circle cx="213" cy="274" r="7.5" fill="#FFFFFF"/>
-  <circle cx="313" cy="274" r="7.5" fill="#FFFFFF"/>
+    <!-- 얼굴 — 세로보다 가로가 넓어 통통하게 -->
+    <ellipse cx="256" cy="304" rx="160" ry="146" fill="url(#fur)"
+             stroke="#1E3B64" stroke-width="17"/>
 
-  <!-- 코와 입 -->
-  <path d="M245 322 L267 322 Q272 322 269 327 L259 340 Q256 344 253 340 L243 327 Q240 322 245 322 Z" fill="#C8322E"/>
-  <path d="M256 344 Q256 360 240 360 M256 344 Q256 360 272 360"
-        fill="none" stroke="#16191C" stroke-width="9" stroke-linecap="round"/>
+    <!-- 볼터치 -->
+    <ellipse cx="146" cy="352" rx="40" ry="27" fill="url(#blush)"/>
+    <ellipse cx="366" cy="352" rx="40" ry="27" fill="url(#blush)"/>
 
-  <!-- 수염 -->
-  <g stroke="#AFBDD0" stroke-width="8" stroke-linecap="round" fill="none">
-    <path d="M118 286 L64 272"/>
-    <path d="M116 314 L60 318"/>
-    <path d="M394 286 L448 272"/>
-    <path d="M396 314 L452 318"/>
-  </g>
+    <!-- 눈 — 얼굴 가운데보다 아래, 넓게 -->
+    <g fill="#151A20">
+      <ellipse cx="196" cy="318" rx="28" ry="33"/>
+      <ellipse cx="316" cy="318" rx="28" ry="33"/>
+    </g>
+    <g fill="#FFFFFF">
+      <circle cx="206" cy="305" r="10.5"/>
+      <circle cx="188" cy="330" r="5"/>
+      <circle cx="326" cy="305" r="10.5"/>
+      <circle cx="308" cy="330" r="5"/>
+    </g>
+
+    <!-- 아주 작은 코와 입 -->
+    <path d="M247 356 L265 356 Q269 356 267 360 L259 370 Q256 373 253 370 L245 360 Q243 356 247 356 Z"
+          fill="#E4726B"/>
+    <path d="M256 373 Q256 386 243 386 M256 373 Q256 386 269 386"
+          fill="none" stroke="#151A20" stroke-width="8" stroke-linecap="round"/>
+
+    <!-- 수염 — 짧게 -->
+    <g stroke="#B7C4D6" stroke-width="9" stroke-linecap="round" fill="none">
+      <path d="M112 306 L66 296"/>
+      <path d="M112 336 L68 342"/>
+      <path d="M400 306 L446 296"/>
+      <path d="M400 336 L444 342"/>
+    </g>
   </g>
 </svg>

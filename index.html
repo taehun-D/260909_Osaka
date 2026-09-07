@@ -76,7 +76,9 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .card.on .mark{background:var(--indigo);box-shadow:0 1px 6px rgba(0,0,0,.35),0 0 0 2.5px rgba(255,255,255,.92)}
 .card.on .mark i{border-color:#fff;background:#fff no-repeat center/14px
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322406B' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")}
-.cbody{padding:9px 10px 11px;text-align:left;background:none;border:0;cursor:pointer;flex:1;width:100%}
+/* 사진 바탕이 흰 제품이면 아래 글 영역과 붙어 보여서 경계선을 하나 둡니다 */
+.cbody{padding:10px 10px 11px;text-align:left;background:none;border:0;border-top:1px solid var(--rule);
+  cursor:pointer;flex:1;width:100%}
 /* 카드는 한글만 — 발음 2줄 / 설명 2줄 / 가격+중요도 1줄.
    일본어 정식명칭은 점원에게 보여줄 때 쓰므로 상세 화면에만 둡니다 */
 .yomi{font-size:14.5px;font-weight:650;color:var(--ink);line-height:1.32;letter-spacing:-.01em;
@@ -157,8 +159,13 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 /* 확대 기준점은 사진 한가운데 — 손가락이 짚은 자리를 따라가도록 JS에서 위치를 잡습니다 */
 .vstage img{position:absolute;top:50%;left:50%;max-width:100%;max-height:100%;transform-origin:50% 50%;
   will-change:transform;user-select:none;-webkit-user-drag:none}
-.vcard{background:var(--card);padding:15px 16px calc(15px + env(safe-area-inset-bottom));border-top:1px solid var(--rule);
+/* 사진 위에 종이 한 장이 올라온 것처럼 — 둥근 윗모서리와 위로 떨어지는 그림자로 경계를 만듭니다 */
+.vcard{background:var(--card);position:relative;z-index:2;
+  border-radius:20px 20px 0 0;
+  padding:9px 16px calc(15px + env(safe-area-inset-bottom));
+  box-shadow:0 -2px 0 rgba(255,255,255,.10), 0 -16px 34px rgba(0,0,0,.62);
   max-height:56vh;overflow-y:auto}
+.vgrab{width:40px;height:4px;border-radius:2px;background:#CFD5DC;margin:0 auto 13px}
 .vtop{display:flex;align-items:flex-start;gap:9px}
 .vjp{font-size:23px;font-weight:700;line-height:1.28;letter-spacing:-.01em;word-break:break-word;flex:1;min-width:0}
 .vpri{font-size:12px;font-weight:700;border-radius:5px;padding:3px 8px;line-height:1.4;
@@ -329,6 +336,7 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
     <img id="vimg" alt="" hidden>
   </div>
   <div class="vcard">
+    <div class="vgrab"></div>
     <div class="vtop">
       <div class="vjp" id="vjp"></div>
       <span class="vpri" id="vpri"></span>
