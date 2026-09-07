@@ -1,5 +1,5 @@
 /* 오프라인 캐시. 데이터나 사진을 바꾸면 아래 VERSION 숫자를 올리세요. */
-const VERSION = "osaka-v12";
+const VERSION = "osaka-v14";
 
 const CORE = [
   "./", "./index.html", "./data.js", "./manifest.json",
@@ -24,7 +24,9 @@ const SEED_IMAGES = [
   "./img/yunker.jpg",
   "./img/meme-tear.jpg",
   "./img/smile-whiteye.jpg",
-  "./img/digi-eye.jpg"
+  "./img/digi-eye.jpg",
+  "./img/sarasaty.jpg",
+  "./img/shamoji.jpg"
 ];
 
 self.addEventListener("install", (e) => {

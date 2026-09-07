@@ -47,16 +47,12 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .chip.tog[aria-pressed="true"]{background:var(--moss);border-color:var(--moss);border-style:solid;color:#fff}
 .fsep{flex:0 0 auto;width:1px;align-self:stretch;background:var(--rule);margin:2px 5px}
 
-.store{margin:18px 0 0}
-.shead{display:flex;align-items:flex-start;gap:9px;padding:0 2px 10px}
-/* 매장 헤더는 한글 이름만 — 일본어 정식명칭은 매장 편집 안에만 있습니다 */
+/* 섹션 = 제품군 분류. 매장 개념은 없습니다 */
+.csec{margin:18px 0 0}
+.shead{display:flex;align-items:center;gap:9px;padding:0 2px 10px}
 .sname{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:0;line-height:1.25}
-.smeta{font-size:12px;color:var(--ink-2);margin-top:3px}
-.sright{margin-left:auto;display:flex;gap:7px;align-items:center;flex:0 0 auto}
-.daypin{font-size:11.5px;font-weight:700;color:var(--indigo);border:1.5px solid var(--indigo);
-  border-radius:4px;padding:1px 6px}
-.iconbtn{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--rule);
-  border-radius:9px;background:var(--card);color:var(--indigo);text-decoration:none;cursor:pointer;padding:0}
+.scount{margin-left:auto;flex:0 0 auto;font-size:12.5px;font-weight:650;color:var(--ink-2);
+  background:var(--shade);border-radius:999px;padding:3px 10px}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(min-width:560px){.grid{grid-template-columns:1fr 1fr 1fr}}
@@ -181,7 +177,6 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 .vwon{font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .vcode{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .vcat{font-size:12px;color:var(--ink-2);background:var(--shade);border-radius:5px;padding:2px 8px}
-.vstore{font-size:12.5px;color:var(--indigo);font-weight:600;margin-left:auto;text-align:right}
 /* 상세 화면 버튼 3개 — 폭·높이·글자 크기 동일. 색으로만 역할을 구분합니다 */
 .vbtns{display:flex;gap:8px;margin-top:13px}
 .vbtns button{flex:1 1 0;min-width:0;height:50px;padding:0;border-radius:10px;
@@ -243,14 +238,9 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
       <input type="file" id="in-cam" accept="image/*" capture="environment" class="hidden">
       <input type="file" id="in-lib" accept="image/*" class="hidden">
 
-      <div class="two">
-        <label class="f"><span>분류</span>
-          <select class="in" id="f-cat"></select>
-        </label>
-        <label class="f"><span>매장</span>
-          <select class="in" id="f-store"></select>
-        </label>
-      </div>
+      <label class="f"><span>제품군 분류</span>
+        <select class="in" id="f-cat"></select>
+      </label>
       <label class="f"><span>일본어 정식명칭</span>
         <input class="in" id="f-jp" placeholder="リーメント ぷちサンプル">
       </label>
@@ -279,31 +269,6 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
   </div>
 </div>
 
-<!-- 매장 편집 -->
-<div class="sheet" id="sheet-store">
-  <div class="spanel">
-    <div class="shd">
-      <h2 id="store-title">매장 추가</h2>
-      <div class="shd-r">
-        <button class="txt sub" data-close="sheet-store">닫기</button>
-        <span class="vsep-v"></span>
-        <button class="txt" id="store-save">저장</button>
-      </div>
-    </div>
-    <div class="sbody">
-      <label class="f"><span>매장명 (일본어)</span><input class="in" id="s-name" placeholder="駿河屋 大阪日本橋店"></label>
-      <label class="f"><span>한글 발음</span><input class="in" id="s-yomi" placeholder="스루가야 오사카 니혼바시텐"></label>
-      <div class="two">
-        <label class="f"><span>지역</span><input class="in" id="s-area" placeholder="난바"></label>
-        <label class="f"><span>며칠차</span><input class="in" id="s-day" type="number" inputmode="numeric" placeholder="1"></label>
-      </div>
-      <label class="f"><span>메모</span><input class="in" id="s-ko" placeholder="지하 식완 코너 먼저"></label>
-      <label class="f"><span>구글맵 링크</span><input class="in" id="s-map" placeholder="공유 > 링크 복사 붙여넣기"></label>
-      <button class="rowbtn warn hidden" id="store-del">이 매장 삭제 (상품도 함께)</button>
-    </div>
-  </div>
-</div>
-
 <!-- 설정 -->
 <div class="sheet" id="sheet-set">
   <div class="spanel">
@@ -317,7 +282,6 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
         <label class="f"><span>환율 — 100엔당 원화</span><input class="in" id="g-krw" type="number" inputmode="numeric"></label>
       </div>
       <button class="rowbtn c" id="g-savemeta">예산·환율 저장</button>
-      <button class="rowbtn c" id="g-addstore">매장 추가</button>
       <div class="hr"></div>
       <div class="g2">
         <button class="rowbtn" id="g-export">백업 내보내기</button>
@@ -348,7 +312,6 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
       <span class="vwon" id="vwon"></span>
       <span class="vcode" id="vcode"></span>
       <span class="vcat" id="vcat" hidden></span>
-      <span class="vstore" id="vstore"></span>
     </div>
     <div class="vbtns">
       <button class="vtick" id="vtick"></button>
@@ -392,7 +355,7 @@ function clearAll(){
 }
 
 /* ═══ state ═══ */
-var S = { meta: {}, stores: [], items: [] };
+var S = { meta: {}, items: [] };
 var urls = {};
 var uid = function(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
 var yenf = function(n){ return "¥" + Number(n||0).toLocaleString("ja-JP"); };
@@ -404,36 +367,30 @@ var PRI = { A: "필수", B: "있으면", C: "눈에 띄면" };
 var prif = function(p){ return PRI[p] || PRI.B; };
 
 function load(){
-  return Promise.all([get("kv","meta"), all("stores"), all("items")]).then(function(r){
+  return Promise.all([get("kv","meta"), all("items")]).then(function(r){
     S.meta = (r[0] && r[0].v) || {};
-    S.stores = r[1].sort(function(a,b){ return (a.ord||0) - (b.ord||0); });
-    S.items = r[2].sort(function(a,b){ return (a.ord||0) - (b.ord||0); });
+    S.items = r[1].sort(function(a,b){ return (a.ord||0) - (b.ord||0); });
   });
 }
 function seed(){
   var meta = { title: TRIP.title, dates: TRIP.dates, budgetYen: TRIP.budgetYen,
                krwPer100: TRIP.krwPer100 || 900 };
   var ops = [put("kv", { k: "meta", v: meta })];
-  STORES.forEach(function(s, i){
-    var sid = uid("s");
-    ops.push(put("stores", { id: sid, ord: i, area: s.area||"", day: s.day||null,
-      name: s.name||"", yomi: s.yomi||"", ko: s.ko||"", map: s.map||"" }));
-    (s.items||[]).forEach(function(it, j){
-      var rec = { id: uid("i"), storeId: sid, ord: j, jp: it.jp||"", yomi: it.yomi||"",
-        ko: it.ko||"", code: it.code||"", yen: Number(it.yen)||0, pri: it.pri||"B", cat: it.cat||"",
-        photoId: null, checked: 0 };
-      if (!it.img){ ops.push(put("items", rec)); return; }
-      /* img/ 폴더 사진을 받아 폰 안에 blob으로 저장 — 실패해도 항목은 남습니다 */
-      var pid = uid("p");
-      ops.push(
-        fetch("img/" + it.img)
-          .then(function(r){ if (!r.ok) throw new Error("404"); return r.blob(); })
-          .then(function(b){ return put("photos", { id: pid, blob: b }); })
-          .then(function(){ rec.photoId = pid; })
-          .catch(function(){})
-          .then(function(){ return put("items", rec); })
-      );
-    });
+  ITEMS.forEach(function(it, j){
+    var rec = { id: uid("i"), ord: j, jp: it.jp||"", yomi: it.yomi||"",
+      ko: it.ko||"", code: it.code||"", yen: Number(it.yen)||0, pri: it.pri||"B", cat: it.cat||"",
+      photoId: null, checked: 0 };
+    if (!it.img){ ops.push(put("items", rec)); return; }
+    /* img/ 폴더 사진을 받아 폰 안에 blob으로 저장 — 실패해도 항목은 남습니다 */
+    var pid = uid("p");
+    ops.push(
+      fetch("img/" + it.img)
+        .then(function(r){ if (!r.ok) throw new Error("404"); return r.blob(); })
+        .then(function(b){ return put("photos", { id: pid, blob: b }); })
+        .then(function(){ rec.photoId = pid; })
+        .catch(function(){})
+        .then(function(){ return put("items", rec); })
+    );
   });
   return Promise.all(ops);
 }
@@ -519,44 +476,30 @@ function render(){
   main.innerHTML = "";
   var shown = 0;
 
-  S.stores.forEach(function(s){
-    /* 분류는 상품마다 붙어 있으므로 매장이 아니라 상품을 걸러냅니다 */
-    var mine = S.items.filter(function(i){ return i.storeId === s.id && catOK(i); });
+  /* 섹션 = 제품군 분류. CATS 순서를 먼저 따르고, 분류가 없는 상품은 맨 뒤에 모읍니다 */
+  var groups = usedCats().slice();
+  if (S.items.some(function(i){ return !i.cat; })) groups.push("");
+
+  groups.forEach(function(c){
+    var mine = S.items.filter(function(i){ return (i.cat || "") === c && catOK(i); });
+    if (!mine.length) return;
     var vis = fLeft ? mine.filter(function(i){ return !i.checked; }) : mine;
     if (!vis.length) return;
     shown += vis.length;
 
     var doneN = mine.filter(function(i){ return i.checked; }).length;
 
-    var sec = document.createElement("section"); sec.className = "store";
+    var sec = document.createElement("section"); sec.className = "csec";
 
     var head = document.createElement("div"); head.className = "shead";
-    var t = document.createElement("div"); t.style.minWidth = "0";
     var h = document.createElement("h2"); h.className = "sname";
-    h.textContent = s.yomi || s.name; t.appendChild(h);
-    var m = document.createElement("div"); m.className = "smeta";
-    m.textContent = (s.area ? s.area + "  ·  " : "") + (s.ko ? s.ko + "  ·  " : "") + doneN + "/" + mine.length;
-    t.appendChild(m);
-    head.appendChild(t);
-
-    var right = document.createElement("div"); right.className = "sright";
-    if (s.day){ var d = document.createElement("span"); d.className = "daypin"; d.textContent = s.day + "일차"; right.appendChild(d); }
-    if (s.map && s.map.indexOf("http") === 0){
-      var a = document.createElement("a"); a.className = "iconbtn"; a.href = s.map; a.target = "_blank"; a.rel = "noopener";
-      a.setAttribute("aria-label", "지도에서 열기");
-      a.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
-      right.appendChild(a);
-    }
-    var eb = document.createElement("button"); eb.className = "iconbtn"; eb.type = "button";
-    eb.setAttribute("aria-label", "매장 편집");
-    eb.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-    eb.addEventListener("click", function(){ openStore(s); });
-    right.appendChild(eb);
-    head.appendChild(right);
+    h.textContent = c || "분류 없음"; head.appendChild(h);
+    var cnt = document.createElement("span"); cnt.className = "scount";
+    cnt.textContent = doneN + " / " + mine.length; head.appendChild(cnt);
     sec.appendChild(head);
 
     var grid = document.createElement("div"); grid.className = "grid";
-    vis.forEach(function(it){ grid.appendChild(cardOf(it, s)); });
+    vis.forEach(function(it){ grid.appendChild(cardOf(it)); });
     sec.appendChild(grid);
     main.appendChild(sec);
   });
@@ -577,7 +520,7 @@ function render(){
   hs.className = "hspend" + (bud && spent > bud ? " over" : "");
 }
 
-function cardOf(it, s){
+function cardOf(it){
   var el = document.createElement("div");
   el.className = "card" + (it.checked ? " on" : "");
 
@@ -591,7 +534,7 @@ function cardOf(it, s){
     var im = document.createElement("img"); im.src = u; im.alt = it.jp;
     ph.innerHTML = ""; ph.appendChild(im); ph.appendChild(mk);
   });
-  ph.addEventListener("click", function(){ openViewer(it, s); });
+  ph.addEventListener("click", function(){ openViewer(it); });
 
   var mk = document.createElement("button");
   mk.className = "mark"; mk.type = "button"; mk.innerHTML = "<i></i>";
@@ -619,7 +562,7 @@ function cardOf(it, s){
   var p = document.createElement("span"); p.className = "pri " + (it.pri || "B");
   p.textContent = prif(it.pri); row.appendChild(p);
   body.appendChild(row);
-  body.addEventListener("click", function(){ openViewer(it, s); });
+  body.addEventListener("click", function(){ openViewer(it); });
 
   el.appendChild(ph); el.appendChild(body);
   return el;
@@ -665,21 +608,10 @@ document.getElementById("f-cat").addEventListener("change", function(){
   fillCats(v || catPrev);
 });
 
-function openItem(it, presetStore){
+function openItem(it){
   edit = it || null; pendingBlob = null; pendingClear = false;
   document.getElementById("item-title").textContent = it ? "상품 편집" : "상품 추가";
   document.getElementById("item-del").classList.toggle("hidden", !it);
-
-  var sel = document.getElementById("f-store");
-  sel.innerHTML = "";
-  S.stores.forEach(function(s){
-    /* 목록에서 고를 때는 한글로 — 지역 · 한글 이름 */
-    var o = document.createElement("option"); o.value = s.id;
-    o.textContent = (s.area ? s.area + " · " : "") + (s.yomi || s.name);
-    sel.appendChild(o);
-  });
-  var o2 = document.createElement("option"); o2.value = "__new"; o2.textContent = "+ 새 매장 추가"; sel.appendChild(o2);
-  sel.value = it ? it.storeId : (presetStore || (S.stores[0] && S.stores[0].id) || "__new");
 
   fillCats(it ? (it.cat || "") : "");
   document.getElementById("f-jp").value = it ? it.jp : "";
@@ -739,11 +671,7 @@ document.getElementById("in-lib").addEventListener("change", onPick);
 document.getElementById("item-save").addEventListener("click", function(){
   var jp = document.getElementById("f-jp").value.trim();
   if (!jp){ alert("일본어 정식명칭을 입력하세요."); return; }
-  var sid = document.getElementById("f-store").value;
-  if (sid === "__new"){ alert("먼저 매장을 추가하세요. 설정 > 매장 추가."); return; }
-
   var it = edit || { id: uid("i"), ord: Date.now(), photoId: null, checked: 0 };
-  it.storeId = sid;
   it.jp = jp;
   it.yomi = document.getElementById("f-yomi").value.trim();
   it.ko = document.getElementById("f-ko").value.trim();
@@ -751,7 +679,8 @@ document.getElementById("item-save").addEventListener("click", function(){
   it.code = document.getElementById("f-code").value.trim();
   var cv = document.getElementById("f-cat").value;
   it.cat = (cv === "__new") ? (edit ? (edit.cat || "") : "") : cv;
-  if ("krw" in it) delete it.krw;   /* 예전 백업에서 넘어온 한국가 필드 정리 */
+  if ("krw" in it) delete it.krw;         /* 예전 백업에서 넘어온 한국가 필드 정리 */
+  if ("storeId" in it) delete it.storeId; /* 매장 개념이 없어졌습니다 */
   it.pri = pri;
 
   var chain = Promise.resolve();
@@ -774,46 +703,7 @@ document.getElementById("item-del").addEventListener("click", function(){
    .then(load).then(function(){ render(); closeSheet("sheet-item"); });
 });
 
-document.getElementById("btn-add").addEventListener("click", function(){
-  if (!S.stores.length){ openStore(null); return; }
-  openItem(null, null);
-});
-
-/* ── store sheet ── */
-var editS = null;
-function openStore(s){
-  editS = s || null;
-  document.getElementById("store-title").textContent = s ? "매장 편집" : "매장 추가";
-  document.getElementById("store-del").classList.toggle("hidden", !s);
-  document.getElementById("s-name").value = s ? s.name : "";
-  document.getElementById("s-yomi").value = s ? s.yomi : "";
-  document.getElementById("s-area").value = s ? s.area : "";
-  document.getElementById("s-day").value = s && s.day ? s.day : "";
-  document.getElementById("s-ko").value = s ? s.ko : "";
-  document.getElementById("s-map").value = s ? s.map : "";
-  openSheet("sheet-store");
-}
-document.getElementById("store-save").addEventListener("click", function(){
-  var name = document.getElementById("s-name").value.trim();
-  if (!name){ alert("매장명을 입력하세요."); return; }
-  var s = editS || { id: uid("s"), ord: Date.now() };
-  s.name = name;
-  s.yomi = document.getElementById("s-yomi").value.trim();
-  s.area = document.getElementById("s-area").value.trim();
-  s.day = Number(document.getElementById("s-day").value) || null;
-  s.ko = document.getElementById("s-ko").value.trim();
-  s.map = document.getElementById("s-map").value.trim();
-  put("stores", s).then(load).then(function(){ buildFilters(); render(); closeSheet("sheet-store"); });
-});
-document.getElementById("store-del").addEventListener("click", function(){
-  if (!editS) return;
-  var kids = S.items.filter(function(i){ return i.storeId === editS.id; });
-  if (!confirm("매장과 상품 " + kids.length + "개를 삭제할까요?")) return;
-  Promise.all(kids.map(function(i){
-    return (i.photoId ? del("photos", i.photoId) : Promise.resolve()).then(function(){ return del("items", i.id); });
-  })).then(function(){ return del("stores", editS.id); })
-     .then(load).then(function(){ buildFilters(); render(); closeSheet("sheet-store"); });
-});
+document.getElementById("btn-add").addEventListener("click", function(){ openItem(null); });
 
 /* ── settings ── */
 document.getElementById("btn-settings").addEventListener("click", function(){
@@ -831,7 +721,6 @@ document.getElementById("g-savemeta").addEventListener("click", function(){
   S.meta.krwPer100 = Number(document.getElementById("g-krw").value) || 900;
   saveMeta().then(function(){ render(); closeSheet("sheet-set"); });
 });
-document.getElementById("g-addstore").addEventListener("click", function(){ closeSheet("sheet-set"); openStore(null); });
 document.getElementById("g-uncheck").addEventListener("click", function(){
   if (!confirm("체크를 전부 지울까요?")) return;
   Promise.all(S.items.map(function(i){ i.checked = 0; return put("items", i); }))
@@ -852,7 +741,7 @@ document.getElementById("g-export").addEventListener("click", function(){
       return blobToDataURL(p.blob).then(function(d){ return { id: p.id, data: d }; });
     }));
   }).then(function(photos){
-    var pack = { v: 1, at: new Date().toISOString(), meta: S.meta, stores: S.stores, items: S.items, photos: photos };
+    var pack = { v: 2, at: new Date().toISOString(), meta: S.meta, items: S.items, photos: photos };
     var blob = new Blob([JSON.stringify(pack)], { type: "application/json" });
     var name = "osaka-backup-" + new Date().toISOString().slice(0,10) + ".json";
     var file = new File([blob], name, { type: "application/json" });
@@ -880,8 +769,8 @@ document.getElementById("in-imp").addEventListener("change", function(e){
     Object.keys(urls).forEach(function(k){ URL.revokeObjectURL(urls[k]); delete urls[k]; });
     return clearAll().then(function(){
       var ops = [put("kv", { k: "meta", v: p.meta || {} })];
-      (p.stores||[]).forEach(function(s){ ops.push(put("stores", s)); });
-      (p.items||[]).forEach(function(i){ ops.push(put("items", i)); });
+      /* 예전 백업에는 매장이 들어 있습니다 — 무시하고 상품만 받습니다 */
+      (p.items||[]).forEach(function(i){ if ("storeId" in i) delete i.storeId; ops.push(put("items", i)); });
       (p.photos||[]).forEach(function(ph){
         ops.push(fetch(ph.data).then(function(r){ return r.blob(); }).then(function(b){ return put("photos", { id: ph.id, blob: b }); }));
       });
@@ -894,7 +783,7 @@ document.getElementById("in-imp").addEventListener("change", function(e){
 /* ═══ viewer ═══ */
 var viewer = document.getElementById("viewer"), vstage = document.getElementById("vstage");
 var vimg = document.getElementById("vimg");
-var vItem = null, vStore = null, sc = 1, tx0 = 0, ty0 = 0;
+var vItem = null, sc = 1, tx0 = 0, ty0 = 0;
 
 /* 사진이 화면보다 커진 만큼만 움직일 수 있게 — 화면보다 작으면 가운데 고정 */
 function limits(){
@@ -922,8 +811,8 @@ function zoomAt(p, ns){
   tx0 = p.x - ux * sc; ty0 = p.y - uy * sc;
   apply();
 }
-function openViewer(it, s){
-  vItem = it; vStore = s;
+function openViewer(it){
+  vItem = it;
   document.getElementById("vjp").textContent = it.jp;
   var vp = document.getElementById("vpri");
   vp.className = "vpri " + (it.pri || "B"); vp.textContent = prif(it.pri);
@@ -935,7 +824,6 @@ function openViewer(it, s){
   document.getElementById("vwon").textContent = has ? wonf(it.yen) : "";
   document.getElementById("vcode").textContent = it.code || "";
   var vc = document.getElementById("vcat"); vc.textContent = it.cat || ""; vc.hidden = !it.cat;
-  document.getElementById("vstore").textContent = s ? s.name : "";
   vimg.hidden = true; vimg.removeAttribute("src");
   if (it.photoId) photoURL(it.photoId).then(function(u){
     if (u && vItem && vItem.id === it.id){ vimg.src = u; vimg.hidden = false; }
@@ -1024,7 +912,7 @@ vstage.addEventListener("wheel", function(e){
 
 /* ═══ boot ═══ */
 open().then(load).then(function(){
-  if (!S.stores.length && !S.items.length && typeof STORES !== "undefined" && STORES.length){
+  if (!S.items.length && typeof ITEMS !== "undefined" && ITEMS.length){
     return seed().then(load);
   }
 }).then(function(){
