@@ -73,6 +73,13 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .photo .ph{position:absolute;top:0;left:0;right:0;bottom:0;
   display:flex;align-items:center;justify-content:center;
   font-size:30px;font-weight:700;color:#93A3B8}
+/* 사진이 여러 장인 상품 — 카드 왼쪽 아래에 장수 */
+.pcount{position:absolute;left:8px;bottom:8px;font-size:11px;font-weight:700;color:#fff;
+  background:rgba(16,20,24,.6);border-radius:999px;padding:2px 8px;line-height:1.5;pointer-events:none}
+.vdots{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:6px;
+  pointer-events:none;z-index:2}
+.vdots i{display:block;width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.38)}
+.vdots i.on{background:#fff}
 .mark{position:absolute;top:8px;right:8px;width:38px;height:38px;border-radius:50%;border:0;padding:0;
   background:rgba(16,20,24,.55);display:grid;place-items:center;cursor:pointer;
   box-shadow:0 1px 6px rgba(0,0,0,.35)}
@@ -241,6 +248,7 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
           <button id="btn-rmphoto" class="hidden">사진 지우기</button>
         </div>
       </div>
+      <div class="hint" id="pv-more" hidden></div>
       <div class="hint">가로 900px로 자동 축소되어 폰에 저장됩니다.</div>
       <input type="file" id="in-cam" accept="image/*" capture="environment" class="hidden">
       <input type="file" id="in-lib" accept="image/*" class="hidden">
@@ -302,6 +310,7 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="상품 상세">
   <div class="vstage" id="vstage">
     <img id="vimg" alt="" hidden>
+    <div class="vdots" id="vdots" hidden></div>
   </div>
   <div class="vcard">
     <div class="vgrab"></div>
@@ -382,22 +391,36 @@ function seed(){
   ITEMS.forEach(function(it, j){
     var rec = { id: uid("i"), ord: j, jp: it.jp||"", yomi: it.yomi||"",
       ko: it.ko||"", yen: Number(it.yen)||0, pri: it.pri||"B", cat: it.cat||"",
-      photoId: null, checked: 0 };
-    if (!it.img){ ops.push(put("items", rec)); return; }
-    /* img/ 폴더 사진을 받아 폰 안에 blob으로 저장 — 실패해도 항목은 남습니다 */
-    var pid = uid("p");
+      photoId: null, photoIds: [], checked: 0 };
+    /* img 에 "a.jpg; b.jpg" 처럼 여러 장을 적을 수 있습니다 */
+    var files = String(it.img||"").split(/[;,|]/).map(function(x){ return x.trim(); })
+                                  .filter(function(x){ return x; });
+    if (!files.length){ ops.push(put("items", rec)); return; }
+    var slot = new Array(files.length);
     ops.push(
-      fetch("img/" + it.img)
-        .then(function(r){ if (!r.ok) throw new Error("404"); return r.blob(); })
-        .then(function(b){ return put("photos", { id: pid, blob: b }); })
-        .then(function(){ rec.photoId = pid; })
-        .catch(function(){})
-        .then(function(){ return put("items", rec); })
+      Promise.all(files.map(function(fn, k){
+        var pid = uid("p");
+        /* img/ 폴더 사진을 받아 폰 안에 blob으로 저장 — 실패해도 항목은 남습니다 */
+        return fetch("img/" + fn)
+          .then(function(r){ if (!r.ok) throw new Error("404"); return r.blob(); })
+          .then(function(b){ return put("photos", { id: pid, blob: b }); })
+          .then(function(){ slot[k] = pid; })
+          .catch(function(){});
+      })).then(function(){
+        rec.photoIds = slot.filter(function(x){ return x; });
+        rec.photoId = rec.photoIds[0] || null;
+        return put("items", rec);
+      })
     );
   });
   return Promise.all(ops);
 }
 
+/* 상품이 가진 사진 목록. 예전 데이터(사진 한 장짜리)도 그대로 읽힙니다 */
+function pidsOf(it){
+  if (it && it.photoIds && it.photoIds.length) return it.photoIds;
+  return (it && it.photoId) ? [it.photoId] : [];
+}
 function photoURL(id){
   if (!id) return Promise.resolve(null);
   if (urls[id]) return Promise.resolve(urls[id]);
@@ -572,10 +595,15 @@ function cardOf(it){
   var span = document.createElement("span"); span.className = "ph";
   span.textContent = (it.yomi || it.jp || "?").trim().charAt(0);
   ph.appendChild(span);
-  if (it.photoId) photoURL(it.photoId).then(function(u){
+  var ids = pidsOf(it);
+  if (ids.length) photoURL(ids[0]).then(function(u){
     if (!u) return;
     var im = document.createElement("img"); im.src = u; im.alt = it.jp;
     ph.innerHTML = ""; ph.appendChild(im); ph.appendChild(mk);
+    if (ids.length > 1){
+      var n = document.createElement("span"); n.className = "pcount";
+      n.textContent = ids.length + "장"; ph.appendChild(n);
+    }
   });
   ph.addEventListener("click", function(){ openViewer(it); });
 
@@ -663,7 +691,11 @@ function openItem(it){
   document.getElementById("f-yen").value = it ? (it.yen || "") : "";
   setPri(it ? (it.pri || "B") : "B");
   paintWonHint();
-  paintPv(it && it.photoId ? it.photoId : null, null);
+  var ids = pidsOf(it);
+  paintPv(ids[0] || null, null);
+  var hint = document.getElementById("pv-more");
+  hint.textContent = ids.length > 1 ? "사진 " + ids.length + "장 중 대표 1장만 여기서 바꿉니다" : "";
+  hint.hidden = ids.length < 2;
   openSheet("sheet-item");
 }
 function setPri(p){
@@ -725,14 +757,24 @@ document.getElementById("item-save").addEventListener("click", function(){
   if ("code" in it) delete it.code;       /* 品番/JAN 칸을 없앴습니다 */
   it.pri = pri;
 
+  /* 사진은 여러 장일 수 있고, 편집 화면에서는 맨 앞(대표) 한 장만 다룹니다 */
+  var ids = pidsOf(it).slice();
   var chain = Promise.resolve();
-  if (pendingClear && it.photoId){ var old = it.photoId; it.photoId = null; chain = del("photos", old); }
+  var drop = [];
+  if (pendingClear && ids.length) drop.push(ids.shift());
   if (pendingBlob){
-    var pid = it.photoId || uid("p");
-    it.photoId = pid;
-    chain = chain.then(function(){ return put("photos", { id: pid, blob: pendingBlob }); })
-                 .then(function(){ if (urls[pid]){ URL.revokeObjectURL(urls[pid]); delete urls[pid]; } });
+    var pid = uid("p");
+    if (ids.length){ drop.push(ids[0]); ids[0] = pid; } else { ids.unshift(pid); }
+    chain = chain.then(function(){ return put("photos", { id: pid, blob: pendingBlob }); });
   }
+  chain = chain.then(function(){
+    return Promise.all(drop.map(function(id){
+      if (urls[id]){ URL.revokeObjectURL(urls[id]); delete urls[id]; }
+      return del("photos", id);
+    }));
+  });
+  it.photoIds = ids;
+  it.photoId = ids[0] || null;
   chain.then(function(){ return put("items", it); })
        .then(load).then(function(){ buildFilters(); render(); closeSheet("sheet-item"); })
        .catch(function(e){ alert("저장하지 못했습니다. 저장 공간이 부족할 수 있습니다."); });
@@ -740,7 +782,7 @@ document.getElementById("item-save").addEventListener("click", function(){
 
 document.getElementById("item-del").addEventListener("click", function(){
   if (!edit || !confirm("이 상품을 삭제할까요?")) return;
-  var p = edit.photoId ? del("photos", edit.photoId) : Promise.resolve();
+  var p = Promise.all(pidsOf(edit).map(function(id){ return del("photos", id); }));
   p.then(function(){ return del("items", edit.id); })
    .then(load).then(function(){ render(); closeSheet("sheet-item"); });
 });
@@ -826,6 +868,7 @@ document.getElementById("in-imp").addEventListener("change", function(e){
 var viewer = document.getElementById("viewer"), vstage = document.getElementById("vstage");
 var vimg = document.getElementById("vimg");
 var vItem = null, sc = 1, tx0 = 0, ty0 = 0;
+var vPids = [], vIdx = 0;
 
 /* 사진이 화면보다 커진 만큼만 움직일 수 있게 — 화면보다 작으면 가운데 고정 */
 function limits(){
@@ -865,14 +908,44 @@ function openViewer(it){
   vy.textContent = has ? yenf(it.yen) : "가격 미정 — 편집에서 입력";
   document.getElementById("vwon").textContent = has ? wonf(it.yen) : "";
   var vc = document.getElementById("vcat"); vc.textContent = it.cat || ""; vc.hidden = !it.cat;
-  vimg.hidden = true; vimg.removeAttribute("src");
-  if (it.photoId) photoURL(it.photoId).then(function(u){
-    if (u && vItem && vItem.id === it.id){ vimg.src = u; vimg.hidden = false; }
-  });
+  vPids = pidsOf(it); vIdx = 0;
+  showPhoto(0);
   resetZoom(); paintTick();
   viewer.classList.add("open"); document.body.style.overflow = "hidden";
 }
-function closeViewer(){ viewer.classList.remove("open"); document.body.style.overflow = ""; vItem = null; }
+function closeViewer(){ viewer.classList.remove("open"); document.body.style.overflow = ""; vItem = null; vPids = []; }
+
+/* 사진 여러 장 — 좌우로 밀어 넘깁니다 (확대하지 않았을 때만) */
+function paintDots(){
+  var d = document.getElementById("vdots");
+  d.innerHTML = "";
+  if (vPids.length < 2){ d.hidden = true; return; }
+  d.hidden = false;
+  for (var i = 0; i < vPids.length; i++){
+    var e = document.createElement("i");
+    if (i === vIdx) e.className = "on";
+    d.appendChild(e);
+  }
+}
+function showPhoto(i){
+  vIdx = i;
+  paintDots();
+  vimg.hidden = true; vimg.removeAttribute("src");
+  var want = vItem, id = vPids[i];
+  if (!id) return;
+  photoURL(id).then(function(u){
+    if (u && vItem && want && vItem.id === want.id && vPids[vIdx] === id){
+      vimg.src = u; vimg.hidden = false;
+    }
+  });
+}
+function stepPhoto(dir){
+  if (vPids.length < 2) return;
+  var j = vIdx + dir;
+  if (j < 0 || j >= vPids.length) return;
+  resetZoom();
+  showPhoto(j);
+}
 function paintTick(){
   if (!vItem) return;
   var b = document.getElementById("vtick");
@@ -885,6 +958,7 @@ document.getElementById("vclose").addEventListener("click", closeViewer);
 document.addEventListener("keydown", function(e){ if (e.key === "Escape"){ closeViewer(); } });
 
 var pts = {}, d0 = 0, s0 = 1, u0 = null, bx = 0, by = 0, lastTap = 0;
+var swX = 0, swY = 0, swUsed = false;
 function dist(a,b){ var dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
 function clamp(v,lo,hi){ return Math.max(lo, Math.min(hi, v)); }
 function mid2(a,b){ return stagePt((a.x+b.x)/2, (a.y+b.y)/2); }
@@ -900,6 +974,7 @@ vstage.addEventListener("touchstart", function(e){
     u0 = { x: (m.x - tx0) / sc, y: (m.y - ty0) / sc };
   } else if (ids.length === 1){
     bx = tx0; by = ty0;
+    swX = pts[ids[0]].x; swY = pts[ids[0]].y; swUsed = false;
     var now = Date.now();
     if (now - lastTap < 300){
       /* 두 번 탭 — 누른 지점을 중심으로 확대 */
@@ -926,12 +1001,19 @@ vstage.addEventListener("touchmove", function(e){
     apply();
   } else if (m.length === 1 && sc > 1.01){
     tx0 = bx + (mv[m[0]].x - pts[m[0]].x); ty0 = by + (mv[m[0]].y - pts[m[0]].y); apply();
+  } else if (m.length === 1 && !swUsed && vPids.length > 1){
+    /* 확대하지 않은 상태 — 좌우로 밀면 다음/이전 사진 */
+    var dx = mv[m[0]].x - swX, dy = mv[m[0]].y - swY;
+    if (Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.5){
+      swUsed = true;
+      stepPhoto(dx < 0 ? 1 : -1);
+    }
   }
 }, { passive: false });
 
 function endT(e){
   for (var i=0;i<e.changedTouches.length;i++) delete pts[e.changedTouches[i].identifier];
-  d0 = 0; u0 = null;
+  d0 = 0; u0 = null; swUsed = false;
   /* 손가락 하나를 떼면 남은 손가락 기준점을 지금 위치로 다시 잡아 화면이 튀지 않게 합니다 */
   for (var j=0;j<e.touches.length;j++){
     var t = e.touches[j];
