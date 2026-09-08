@@ -61,10 +61,16 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .card.on .photo img{opacity:.4}
 .card.on .yen,.card.on .won,.card.on .pri{opacity:.5}
 /* 사진 높이 = 카드 폭의 0.8배 (예전 정사각 대비 4/5). 한 화면에 상품이 더 들어옵니다 */
-.photo{position:relative;width:100%;aspect-ratio:5/4;background:var(--shade);border:0;padding:0;
-  display:grid;place-items:center;cursor:pointer;overflow:hidden}
-.photo img{width:100%;height:100%;object-fit:cover;display:block}
-.photo .ph{font-size:30px;font-weight:700;color:#93A3B8}
+/* 사진 칸 높이 = 카드 폭의 0.8배(5:4).
+   aspect-ratio + display:grid + 자식의 height:100% 조합은 사파리에서
+   사진이 제 크기대로만 놓이고 위에 빈칸이 생겼습니다.
+   높이는 padding-top 으로 잡고 사진은 절대위치로 칸을 꽉 채웁니다 */
+.photo{position:relative;width:100%;height:0;padding:80% 0 0;background:var(--shade);border:0;
+  display:block;cursor:pointer;overflow:hidden;flex:0 0 auto}
+.photo img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
+.photo .ph{position:absolute;top:0;left:0;right:0;bottom:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:700;color:#93A3B8}
 .mark{position:absolute;top:8px;right:8px;width:38px;height:38px;border-radius:50%;border:0;padding:0;
   background:rgba(16,20,24,.55);display:grid;place-items:center;cursor:pointer;
   box-shadow:0 1px 6px rgba(0,0,0,.35)}
