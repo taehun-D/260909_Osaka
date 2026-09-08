@@ -146,18 +146,27 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 .prirow button[data-p="A"][aria-pressed="true"]{background:var(--vermilion);border-color:var(--vermilion)}
 .prirow button[data-p="B"][aria-pressed="true"]{background:var(--indigo);border-color:var(--indigo)}
 .prirow button[data-p="C"][aria-pressed="true"]{background:var(--ink-2);border-color:var(--ink-2)}
-.picker{display:flex;gap:10px;margin-bottom:14px}
-.pv{width:104px;height:104px;border-radius:10px;background:var(--shade);overflow:hidden;flex:0 0 auto;
-  display:grid;place-items:center;color:var(--ink-3);font-size:12px;text-align:center;padding:6px}
-.pv img{width:100%;height:100%;object-fit:cover}
-.pbtns{flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center}
-.pbtns button{border:1px solid var(--rule);background:var(--card);color:var(--ink);border-radius:9px;
-  padding:11px;font-size:14px;cursor:pointer}
+/* 사진 여러 장 — 옆으로 넘겨 보는 줄. 맨 앞이 카드에 쓰이는 대표 사진 */
+.pstrip{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.pstrip::-webkit-scrollbar{display:none}
+.pslot{position:relative;width:104px;height:84px;flex:0 0 auto;border-radius:10px;overflow:hidden;
+  background:var(--shade);border:1px solid var(--rule);padding:0;cursor:pointer}
+.pslot img{width:100%;height:100%;object-fit:cover;display:block}
+.pslot .lead{position:absolute;left:0;right:0;bottom:0;font-size:10.5px;font-weight:700;color:#fff;
+  background:rgba(34,64,107,.88);padding:2px 0;text-align:center}
+.pdel{position:absolute;top:4px;right:4px;width:23px;height:23px;border-radius:50%;border:0;padding:0;
+  background:rgba(16,20,24,.62);color:#fff;font-size:14px;line-height:23px;text-align:center;cursor:pointer}
+.pempty{width:104px;height:84px;flex:0 0 auto;border-radius:10px;background:var(--shade);
+  border:1px dashed var(--rule);display:flex;align-items:center;justify-content:center;
+  color:var(--ink-3);font-size:12.5px}
+.pbtns2{display:flex;gap:8px;margin-bottom:12px}
+.pbtns2 button{flex:1;border:1px solid var(--rule);background:var(--card);color:var(--ink);
+  border-radius:9px;padding:11px 8px;font-size:14px;cursor:pointer}
 .hint{font-size:12px;color:var(--ink-3);margin:-6px 0 14px}
 .rowbtn{width:100%;text-align:left;border:1px solid var(--rule);background:var(--card);color:var(--ink);
   border-radius:10px;padding:13px 12px;font-size:14.5px;margin-bottom:8px;cursor:pointer}
 .rowbtn.c{text-align:center;font-weight:650}
-.rowbtn.warn{color:var(--vermilion)}
+.rowbtn.warn{color:var(--vermilion);text-align:center;font-weight:650}
 .rowbtn small{display:block;color:var(--ink-3);font-size:12px;margin-top:3px}
 .hr{height:1px;background:var(--rule);margin:16px 0}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -240,18 +249,14 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
       </div>
     </div>
     <div class="sbody">
-      <div class="picker">
-        <div class="pv" id="pv">사진 없음</div>
-        <div class="pbtns">
-          <button id="btn-cam">사진 찍기</button>
-          <button id="btn-lib">앨범에서 선택</button>
-          <button id="btn-rmphoto" class="hidden">사진 지우기</button>
-        </div>
+      <div class="pstrip" id="pstrip"></div>
+      <div class="pbtns2">
+        <button id="btn-cam">사진 찍기</button>
+        <button id="btn-lib">앨범에서 선택</button>
       </div>
-      <div class="hint" id="pv-more" hidden></div>
-      <div class="hint">가로 900px로 자동 축소되어 폰에 저장됩니다.</div>
+      <div class="hint" id="pv-more"></div>
       <input type="file" id="in-cam" accept="image/*" capture="environment" class="hidden">
-      <input type="file" id="in-lib" accept="image/*" class="hidden">
+      <input type="file" id="in-lib" accept="image/*" multiple class="hidden">
 
       <label class="f"><span>제품군 분류</span>
         <select class="in" id="f-cat"></select>
@@ -655,8 +660,11 @@ Array.prototype.forEach.call(document.querySelectorAll(".sheet"), function(sh){
 });
 
 /* ── item sheet ── */
-var edit = null, pendingBlob = null, pendingClear = false, pri = "B";
-var pv = document.getElementById("pv");
+var edit = null, pri = "B";
+/* 편집 중인 사진 목록. { pid: "저장된 사진" } 또는 { blob: 새로 넣은 사진 } */
+var pvList = [], pvOrig = [], pvUrls = [];
+var MAXPHOTO = 6;
+var pstrip = document.getElementById("pstrip");
 
 /* 분류 목록 — 쓰이고 있는 분류 + data.js의 CATS. 맨 아래에서 새로 만들 수 있습니다 */
 var catPrev = "";
@@ -680,7 +688,7 @@ document.getElementById("f-cat").addEventListener("change", function(){
 });
 
 function openItem(it){
-  edit = it || null; pendingBlob = null; pendingClear = false;
+  edit = it || null;
   document.getElementById("item-title").textContent = it ? "상품 편집" : "상품 추가";
   document.getElementById("item-del").classList.toggle("hidden", !it);
 
@@ -691,11 +699,9 @@ function openItem(it){
   document.getElementById("f-yen").value = it ? (it.yen || "") : "";
   setPri(it ? (it.pri || "B") : "B");
   paintWonHint();
-  var ids = pidsOf(it);
-  paintPv(ids[0] || null, null);
-  var hint = document.getElementById("pv-more");
-  hint.textContent = ids.length > 1 ? "사진 " + ids.length + "장 중 대표 1장만 여기서 바꿉니다" : "";
-  hint.hidden = ids.length < 2;
+  pvOrig = pidsOf(it);
+  pvList = pvOrig.map(function(id){ return { pid: id }; });
+  paintStrip();
   openSheet("sheet-item");
 }
 function setPri(p){
@@ -707,37 +713,74 @@ function setPri(p){
 Array.prototype.forEach.call(document.querySelectorAll("#f-pri button"), function(b){
   b.addEventListener("click", function(){ setPri(b.getAttribute("data-p")); });
 });
-function paintPv(photoId, blob){
-  var rm = document.getElementById("btn-rmphoto");
-  if (blob){
-    pv.innerHTML = ""; var i = document.createElement("img"); i.src = URL.createObjectURL(blob); pv.appendChild(i);
-    rm.classList.remove("hidden"); return;
+/* 사진 줄 다시 그리기 — 첫 칸이 대표, 사진을 누르면 그 사진이 대표가 됩니다 */
+function paintStrip(){
+  pvUrls.forEach(function(u){ URL.revokeObjectURL(u); });
+  pvUrls = [];
+  pstrip.innerHTML = "";
+  if (!pvList.length){
+    var e = document.createElement("div"); e.className = "pempty"; e.textContent = "사진 없음";
+    pstrip.appendChild(e);
   }
-  if (photoId){
-    photoURL(photoId).then(function(u){
-      if (u){ pv.innerHTML = ""; var i = document.createElement("img"); i.src = u; pv.appendChild(i); rm.classList.remove("hidden"); }
-      else { pv.textContent = "사진 없음"; rm.classList.add("hidden"); }
+  pvList.forEach(function(entry, i){
+    var box = document.createElement("button");
+    box.className = "pslot"; box.type = "button";
+    box.setAttribute("aria-label", i === 0 ? "대표 사진" : "이 사진을 대표로");
+    var im = document.createElement("img"); im.alt = "";
+    if (entry.blob){
+      var u = URL.createObjectURL(entry.blob); pvUrls.push(u); im.src = u;
+    } else {
+      photoURL(entry.pid).then(function(u){ if (u) im.src = u; });
+    }
+    box.appendChild(im);
+    if (i === 0){
+      var lb = document.createElement("span"); lb.className = "lead"; lb.textContent = "대표";
+      box.appendChild(lb);
+    }
+    box.addEventListener("click", function(){
+      if (i === 0) return;
+      pvList.unshift(pvList.splice(i, 1)[0]);   /* 누른 사진을 맨 앞으로 */
+      paintStrip();
     });
-    return;
-  }
-  pv.textContent = "사진 없음"; rm.classList.add("hidden");
+    var x = document.createElement("span");
+    x.className = "pdel"; x.textContent = "✕";
+    x.addEventListener("click", function(ev){
+      ev.stopPropagation();
+      pvList.splice(i, 1); paintStrip();
+    });
+    box.appendChild(x);
+    pstrip.appendChild(box);
+  });
+  var hint = document.getElementById("pv-more");
+  hint.textContent = pvList.length
+    ? "사진 " + pvList.length + "장 · 첫 장이 카드에 보입니다. 사진을 누르면 대표로, ✕로 지웁니다 (최대 " + MAXPHOTO + "장)"
+    : "가로 900px로 자동 축소되어 폰에 저장됩니다";
 }
 function paintWonHint(){
   var v = Number(document.getElementById("f-yen").value) || 0;
-  document.getElementById("f-won").textContent = v ? "약 " + wonf(v) + " (100엔 = " + rate() + "원)" : "-";
+  var w = document.getElementById("f-won");
+  w.textContent = v ? "약 " + wonf(v) + " (100엔 = " + rate() + "원)" : "";
+  w.hidden = !v;
 }
 document.getElementById("f-yen").addEventListener("input", paintWonHint);
 document.getElementById("btn-cam").addEventListener("click", function(){ document.getElementById("in-cam").click(); });
 document.getElementById("btn-lib").addEventListener("click", function(){ document.getElementById("in-lib").click(); });
-document.getElementById("btn-rmphoto").addEventListener("click", function(){
-  pendingBlob = null; pendingClear = true; paintPv(null, null);
-});
 function onPick(e){
-  var f = e.target.files && e.target.files[0];
+  var fs = e.target.files ? Array.prototype.slice.call(e.target.files) : [];
   e.target.value = "";
-  if (!f) return;
-  shrink(f).then(function(b){ pendingBlob = b; pendingClear = false; paintPv(null, b); })
-           .catch(function(err){ alert(err.message); });
+  if (!fs.length) return;
+  var room = MAXPHOTO - pvList.length;
+  if (room <= 0){ alert("사진은 최대 " + MAXPHOTO + "장까지 넣을 수 있습니다."); return; }
+  if (fs.length > room){ alert(room + "장만 넣습니다. (최대 " + MAXPHOTO + "장)"); fs = fs.slice(0, room); }
+  /* 고른 순서대로 뒤에 붙입니다 */
+  var chain = Promise.resolve();
+  fs.forEach(function(f){
+    chain = chain.then(function(){
+      return shrink(f).then(function(b){ pvList.push({ blob: b }); })
+                      .catch(function(err){ alert(err.message); });
+    });
+  });
+  chain.then(paintStrip);
 }
 document.getElementById("in-cam").addEventListener("change", onPick);
 document.getElementById("in-lib").addEventListener("change", onPick);
@@ -757,22 +800,22 @@ document.getElementById("item-save").addEventListener("click", function(){
   if ("code" in it) delete it.code;       /* 品番/JAN 칸을 없앴습니다 */
   it.pri = pri;
 
-  /* 사진은 여러 장일 수 있고, 편집 화면에서는 맨 앞(대표) 한 장만 다룹니다 */
-  var ids = pidsOf(it).slice();
-  var chain = Promise.resolve();
-  var drop = [];
-  if (pendingClear && ids.length) drop.push(ids.shift());
-  if (pendingBlob){
+  /* 사진 줄에 남아 있는 순서대로 저장합니다. 첫 장이 대표 */
+  var ids = [], adds = [];
+  pvList.forEach(function(entry){
+    if (entry.pid){ ids.push(entry.pid); return; }
     var pid = uid("p");
-    if (ids.length){ drop.push(ids[0]); ids[0] = pid; } else { ids.unshift(pid); }
-    chain = chain.then(function(){ return put("photos", { id: pid, blob: pendingBlob }); });
-  }
-  chain = chain.then(function(){
-    return Promise.all(drop.map(function(id){
-      if (urls[id]){ URL.revokeObjectURL(urls[id]); delete urls[id]; }
-      return del("photos", id);
-    }));
+    ids.push(pid);
+    adds.push({ id: pid, blob: entry.blob });
   });
+  var drop = pvOrig.filter(function(id){ return ids.indexOf(id) < 0; });
+  var chain = Promise.all(adds.map(function(a){ return put("photos", { id: a.id, blob: a.blob }); }))
+    .then(function(){
+      return Promise.all(drop.map(function(id){
+        if (urls[id]){ URL.revokeObjectURL(urls[id]); delete urls[id]; }
+        return del("photos", id);
+      }));
+    });
   it.photoIds = ids;
   it.photoId = ids[0] || null;
   chain.then(function(){ return put("items", it); })
