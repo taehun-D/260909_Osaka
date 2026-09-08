@@ -53,6 +53,9 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
 .sname{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:0;line-height:1.25}
 .scount{margin-left:auto;flex:0 0 auto;font-size:12.5px;font-weight:650;color:var(--ink-2);
   background:var(--shade);border-radius:999px;padding:3px 10px}
+/* 분류 이름 바꾸기 */
+.snbtn{width:30px;height:30px;flex:0 0 auto;display:grid;place-items:center;padding:0;
+  border:1px solid var(--rule);border-radius:8px;background:var(--card);color:var(--ink-2);cursor:pointer}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(min-width:560px){.grid{grid-template-columns:1fr 1fr 1fr}}
@@ -60,7 +63,6 @@ header{position:sticky;top:0;z-index:20;background:rgba(231,233,230,.94);
   display:flex;flex-direction:column}
 .card.on .photo img{opacity:.4}
 .card.on .yen,.card.on .won,.card.on .pri{opacity:.5}
-/* 사진 높이 = 카드 폭의 0.8배 (예전 정사각 대비 4/5). 한 화면에 상품이 더 들어옵니다 */
 /* 사진 칸 높이 = 카드 폭의 0.8배(5:4).
    aspect-ratio + display:grid + 자식의 height:100% 조합은 사파리에서
    사진이 제 크기대로만 놓이고 위에 빈칸이 생겼습니다.
@@ -181,7 +183,6 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
 .vyen{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
 .vyen.none{font-size:15px;font-weight:600;color:var(--ink-3)}
 .vwon{font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
-.vcode{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .vcat{font-size:12px;color:var(--ink-2);background:var(--shade);border-radius:5px;padding:2px 8px}
 /* 상세 화면 버튼 3개 — 폭·높이·글자 크기 동일. 색으로만 역할을 구분합니다 */
 .vbtns{display:flex;gap:8px;margin-top:13px}
@@ -260,9 +261,6 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
         <input class="in" id="f-yen" type="number" inputmode="numeric" placeholder="4400">
         <div class="hint" id="f-won" style="margin:5px 0 0">-</div>
       </label>
-      <label class="f"><span>品番 / JAN</span>
-        <input class="in" id="f-code" placeholder="선택">
-      </label>
       <label class="f"><span>중요도</span>
         <div class="prirow" id="f-pri">
           <button type="button" data-p="A">필수</button>
@@ -316,7 +314,6 @@ label.f>span{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:5px
     <div class="vrow">
       <span class="vyen" id="vyen"></span>
       <span class="vwon" id="vwon"></span>
-      <span class="vcode" id="vcode"></span>
       <span class="vcat" id="vcat" hidden></span>
     </div>
     <div class="vbtns">
@@ -384,7 +381,7 @@ function seed(){
   var ops = [put("kv", { k: "meta", v: meta })];
   ITEMS.forEach(function(it, j){
     var rec = { id: uid("i"), ord: j, jp: it.jp||"", yomi: it.yomi||"",
-      ko: it.ko||"", code: it.code||"", yen: Number(it.yen)||0, pri: it.pri||"B", cat: it.cat||"",
+      ko: it.ko||"", yen: Number(it.yen)||0, pri: it.pri||"B", cat: it.cat||"",
       photoId: null, checked: 0 };
     if (!it.img){ ops.push(put("items", rec)); return; }
     /* img/ 폴더 사진을 받아 폰 안에 blob으로 저장 — 실패해도 항목은 남습니다 */
@@ -476,6 +473,42 @@ function mkChip(label, on, fn, cls){
   filters.appendChild(b);
 }
 
+/* ═══ 분류 이름 바꾸기 ═══ */
+/* 같은 분류를 쓰는 상품을 한꺼번에 고칩니다. 이미 있는 이름을 넣으면 그쪽으로 합쳐집니다 */
+function renameCat(from){
+  var label = from ? "분류 이름을 바꿉니다." : "분류가 없는 상품들에 분류를 붙입니다.";
+  var to = prompt(label + "\n예: 잡화 → 칼디", from || "");
+  if (to === null) return;
+  to = to.trim();
+  if (to === (from || "")) return;
+
+  var hit = S.items.filter(function(i){ return (i.cat || "") === (from || ""); });
+  if (!hit.length) return;
+  var merge = to && usedCats().indexOf(to) >= 0;
+  var msg = "상품 " + hit.length + "개의 분류를 "
+          + (from || "분류 없음") + " → " + (to || "분류 없음") + "(으)로 바꿉니다."
+          + (merge ? "\n이미 있는 분류라 그쪽으로 합쳐집니다." : "");
+  if (!confirm(msg)) return;
+
+  hit.forEach(function(i){ i.cat = to; });
+  Promise.all(hit.map(function(i){ return put("items", i); }))
+    .then(load)
+    .then(function(){
+      if (fCat === (from || "")) fCat = to || "__none";
+      if (fCat !== "ALL" && usedCats().indexOf(fCat) < 0 && fCat !== "__none") fCat = "ALL";
+      buildFilters(); render();
+    })
+    .catch(function(){ alert("바꾸지 못했습니다."); });
+}
+function renameBtn(c){
+  var b = document.createElement("button");
+  b.className = "snbtn"; b.type = "button";
+  b.setAttribute("aria-label", "분류 이름 바꾸기");
+  b.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+  b.addEventListener("click", function(){ renameCat(c); });
+  return b;
+}
+
 /* ═══ render ═══ */
 var main = document.getElementById("main");
 function render(){
@@ -500,6 +533,7 @@ function render(){
     var head = document.createElement("div"); head.className = "shead";
     var h = document.createElement("h2"); h.className = "sname";
     h.textContent = c || "분류 없음"; head.appendChild(h);
+    head.appendChild(renameBtn(c));
     var cnt = document.createElement("span"); cnt.className = "scount";
     cnt.textContent = doneN + " / " + mine.length; head.appendChild(cnt);
     sec.appendChild(head);
@@ -624,7 +658,6 @@ function openItem(it){
   document.getElementById("f-yomi").value = it ? it.yomi : "";
   document.getElementById("f-ko").value = it ? it.ko : "";
   document.getElementById("f-yen").value = it ? (it.yen || "") : "";
-  document.getElementById("f-code").value = it ? it.code : "";
   setPri(it ? (it.pri || "B") : "B");
   paintWonHint();
   paintPv(it && it.photoId ? it.photoId : null, null);
@@ -682,11 +715,11 @@ document.getElementById("item-save").addEventListener("click", function(){
   it.yomi = document.getElementById("f-yomi").value.trim();
   it.ko = document.getElementById("f-ko").value.trim();
   it.yen = Number(document.getElementById("f-yen").value) || 0;
-  it.code = document.getElementById("f-code").value.trim();
   var cv = document.getElementById("f-cat").value;
   it.cat = (cv === "__new") ? (edit ? (edit.cat || "") : "") : cv;
   if ("krw" in it) delete it.krw;         /* 예전 백업에서 넘어온 한국가 필드 정리 */
   if ("storeId" in it) delete it.storeId; /* 매장 개념이 없어졌습니다 */
+  if ("code" in it) delete it.code;       /* 品番/JAN 칸을 없앴습니다 */
   it.pri = pri;
 
   var chain = Promise.resolve();
@@ -828,7 +861,6 @@ function openViewer(it){
   vy.className = "vyen" + (has ? "" : " none");
   vy.textContent = has ? yenf(it.yen) : "가격 미정 — 편집에서 입력";
   document.getElementById("vwon").textContent = has ? wonf(it.yen) : "";
-  document.getElementById("vcode").textContent = it.code || "";
   var vc = document.getElementById("vcat"); vc.textContent = it.cat || ""; vc.hidden = !it.cat;
   vimg.hidden = true; vimg.removeAttribute("src");
   if (it.photoId) photoURL(it.photoId).then(function(u){
